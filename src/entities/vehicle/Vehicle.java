@@ -1,14 +1,17 @@
 package entities.vehicle;
 
+import entities.person.Owner;
+
 public class Vehicle {
 
     private int id, seats;
     private double chargePerKm, mileage;
-    private String owner, fuelType;
+    private Owner owner;
+    private FuelType  fuelType;
     VehicleType type;
 
 
-    public Vehicle(int id, VehicleType type, String owner, int seats, double cpk, double mileage, String fuelType ){
+    public Vehicle(int id, VehicleType type, Owner owner, int seats, double cpk, double mileage,FuelType fuelType ){
         this.id = id;
         this.type = type;
         this.owner = owner;
@@ -33,11 +36,11 @@ public class Vehicle {
         return mileage;
     }
 
-    public String getOwner() {
+    public Owner getOwner() {
         return owner;
     }
 
-    public String getFuelType() {
+    public FuelType getFuelType() {
         return fuelType;
     }
 
