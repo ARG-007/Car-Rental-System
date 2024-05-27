@@ -1,68 +1,96 @@
 package views.console;
 
-import entities.person.Customer;
-import entities.vehicle.VehicleType;
+import database.entities.RentalInfo;
+import database.entities.person.Customer;
 
 public class CustomerMenu extends Console{
     private Customer customer;
 
-    private String pickup, destination;
-    private int rentType;
-    private VehicleType vt;
+    private RentalInfo rental = new RentalInfo();
+
 
 
     public void showMenu(){
         separator('~');
-        System.out.println("1: Set Pickup");
-        System.out.println("2: Set Rental Type");
-        System.out.println("3: Set Destination");
-        System.out.println("4: Calculate Fare");
-        System.out.println("5: Select Car Type");
-        System.out.println("6: View Bookings");
-        System.out.println("7: Pay for Rent");
-        System.out.println("8: Show Menu");
-        System.out.println("9: Exit");
+        System.out.println("1: Rent");
+        System.out.println("2: View Rentals");
+        System.out.println("3: Pay for Rent");
+        System.out.println("4: Show Menu");
+        System.out.println("5: Exit");
         separator('~');
     }
 
 
-
     public void display() {
+        int choice;
         showMenu();
         while(true){
-            switch(integerInput("Enter You Choice [8 to Show Menu] : ")){
+            choice = integerInput("Enter You Choice [4 to Show Menu] : ");
+            separator('-');
+            switch(choice){
+                case 1: rentMenu(); break;
+                case 2: break;
+                case 3: break;
+                case 4: showMenu(); break;
+                case 5: return;
+                default: break;
+            }
+        }
+    }
+
+
+
+    void rentMenu(){
+
+        int choice;
+
+
+
+        do {
+            separator('@');
+            System.out.println("\t1: Change Pickup");
+            System.out.println("\t2: Change Rental Type");
+            System.out.println("\t3: Change Destination");
+            System.out.println("\t4: Change Car Type");
+            System.out.println("\t5: Calculate Fare");
+            System.out.println("\t6: Confirm");
+            System.out.println("\t7: Exit");
+            separator('@');
+
+            choice = integerInput("Enter Your Choice: ");
+            separator('-');
+
+            switch(choice) {
                 case 1: break;
                 case 2: break;
                 case 3: break;
                 case 4: break;
                 case 5: break;
                 case 6: break;
+
                 case 7: break;
-                case 8: break;
-                case 9: return;
-                default: break;
+                default:
+                    System.out.println("Enter an Correct Choice!");
             }
-            separator('-');
-        }
+
+        } while(choice != 7);
+
+
     }
 
-    public void setCustomer() {
-        this.customer = customer;
+    boolean validateInput(){
+
+
+        return false;
     }
 
-    public void setPickup() {
-        this.pickup = pickup;
+    void setPickup(){
+
     }
 
-    public void setDestination() {
-        this.destination = destination;
+    void setRentalType(){
+
     }
 
-    public void setRentType() {
-        this.rentType = rentType;
-    }
 
-    public void setVt() {
-        this.vt = vt;
-    }
 }

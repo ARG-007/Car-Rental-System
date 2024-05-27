@@ -1,6 +1,6 @@
-package entities.vehicle;
+package database.entities.vehicle;
 
-import entities.person.Owner;
+import database.entities.person.Owner;
 
 public class Vehicle {
 
@@ -8,12 +8,12 @@ public class Vehicle {
     private double chargePerKm, mileage;
     private Owner owner;
     private FuelType  fuelType;
-    VehicleType type;
+    VehicleType vehicleType;
 
 
-    public Vehicle(int id, VehicleType type, Owner owner, int seats, double cpk, double mileage,FuelType fuelType ){
+    public Vehicle(int id, VehicleType vehicleType, Owner owner, int seats, double cpk, double mileage,FuelType fuelType){
         this.id = id;
-        this.type = type;
+        this.vehicleType = vehicleType;
         this.owner = owner;
         this.seats = seats;
         this.chargePerKm = cpk;
@@ -44,7 +44,8 @@ public class Vehicle {
         return fuelType;
     }
 
-    public VehicleType getType() {
-        return type;
+    public VehicleType getVehicleType() {
+        return vehicleType;
     }
+
 }

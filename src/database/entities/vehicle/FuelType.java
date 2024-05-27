@@ -1,4 +1,4 @@
-package entities.vehicle;
+package database.entities.vehicle;
 
 public enum FuelType {
     Petrol,

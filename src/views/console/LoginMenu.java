@@ -10,7 +10,7 @@ public class LoginMenu extends Console {
 
         switch(integerInput("Enter Your Choice: ")){
             case 1: break;
-            case 2: break;
+            case 2: new CustomerMenu().display(); break;
             case 3: return;
             default:
                 System.out.println("Wrong Choice, Choose Wisely Next Time");

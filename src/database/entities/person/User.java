@@ -1,6 +1,6 @@
-package entities.person;
+package database.entities.person;
 
-public abstract class Person {
+public abstract class User {
     protected int id, age;
     protected String name, address;
     protected String phone;
