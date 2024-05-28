@@ -1,6 +1,6 @@
-package database.entities.vehicle;
+package arg.hozocabby.database.entities.vehicle;
 
-import database.entities.person.Owner;
+import arg.hozocabby.database.entities.person.Owner;
 
 public class Vehicle {
 

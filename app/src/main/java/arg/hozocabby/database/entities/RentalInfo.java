@@ -1,7 +1,7 @@
-package database.entities;
+package arg.hozocabby.database.entities;
 
-import database.entities.person.*;
-import database.entities.vehicle.*;
+import arg.hozocabby.database.entities.person.*;
+import arg.hozocabby.database.entities.vehicle.*;
 
 public class RentalInfo {
     private int id;

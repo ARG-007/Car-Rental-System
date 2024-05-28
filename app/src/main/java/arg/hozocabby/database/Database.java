@@ -1,10 +1,10 @@
-package database;
+package arg.hozocabby.database;
 
 import java.util.*;
-import database.entities.Place;
-import database.entities.RentalInfo;
-import database.entities.vehicle.*;
-import database.entities.person.*;
+import arg.hozocabby.database.entities.Place;
+import arg.hozocabby.database.entities.RentalInfo;
+import arg.hozocabby.database.entities.vehicle.*;
+import arg.hozocabby.database.entities.person.*;
 
 public class Database {
     private static Database db;

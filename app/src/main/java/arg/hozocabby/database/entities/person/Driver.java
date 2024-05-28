@@ -1,4 +1,4 @@
-package database.entities.person;
+package arg.hozocabby.database.entities.person;
 
 public final class Driver extends User {
     public Driver(int id, int age, String name,String address, String phone ) {

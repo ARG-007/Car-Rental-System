@@ -1,4 +1,4 @@
-package database.entities.vehicle;
+package arg.hozocabby.database.entities.vehicle;
 
 public enum FuelType {
     Petrol,

@@ -1,4 +1,4 @@
-package database.entities.person;
+package arg.hozocabby.database.entities.person;
 
 public final class Owner extends User {
     public Owner(int id, int age, String name, String address, String phone ) {

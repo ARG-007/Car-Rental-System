@@ -1,6 +1,7 @@
+package arg.hozocabby;
 
-import views.View;
-import views.console.*;
+import arg.hozocabby.views.View;
+import arg.hozocabby.views.console.*;
 
 public class Main {
     public static void main(String[] args) {

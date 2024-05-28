@@ -1,4 +1,4 @@
-package database.entities.person;
+package arg.hozocabby.database.entities.person;
 
 public abstract class User {
     protected int id, age;

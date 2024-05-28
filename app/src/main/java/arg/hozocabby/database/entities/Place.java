@@ -1,4 +1,4 @@
-package database.entities;
+package arg.hozocabby.database.entities;
 
 public record Place(String name, double latitude, double longitude) {
     /**

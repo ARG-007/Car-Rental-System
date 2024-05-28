@@ -11,4 +11,3 @@ plugins {
 }
 
 rootProject.name = "Hozo Cabby"
-include("app")

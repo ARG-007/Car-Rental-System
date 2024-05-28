@@ -1,4 +1,4 @@
-package views.console;
+package arg.hozocabby.views.console;
 
 public class LoginMenu extends Console {
     public void display(){

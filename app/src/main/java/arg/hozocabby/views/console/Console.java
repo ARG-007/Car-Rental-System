@@ -1,6 +1,6 @@
-package views.console;
+package arg.hozocabby.views.console;
 
-import views.View;
+import arg.hozocabby.views.View;
 
 import java.util.Scanner;
 

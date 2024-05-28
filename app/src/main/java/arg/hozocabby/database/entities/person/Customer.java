@@ -1,4 +1,4 @@
-package database.entities.person;
+package arg.hozocabby.database.entities.person;
 
 public final class Customer extends User {
     public Customer(int id, int age, String name,String address, String phone ) {
