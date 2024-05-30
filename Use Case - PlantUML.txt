@@ -1,0 +1,38 @@
+@startuml
+actor "Registered User" as cus
+actor Owner as own
+actor Driver as driver
+
+
+"Rent a Car" as (Rent)
+"View Rentals" as (View Rents)
+
+cus --> (Rent)
+cus --> (View Rents)
+cus --> (Cancel Rent)
+cus --> (Payment)
+
+note left of (Payment) : At Drop Point
+
+rectangle Renting {
+(Set / Change Pickup)
+(Rent) .down-> (Renting) : <<includes>>
+(Set / Change Pickup Time)
+(Set / Change Destination)
+(Set / Change Car Type)
+(View Travel Time)
+(View Fare)
+}
+
+own --> (Add Car)
+own --> (Remove Car)
+own --> (View Earnings)
+own --> (View Earnings from Specific Car)
+
+(View Earnings) <|-- (View Earnings from Specific Car)
+
+driver --> (View Assigned Rental Job)
+driver --> (View Commisions)
+driver --> (Cancel Assignment)
+driver --> (Declare Fare as Completed)
+@enduml

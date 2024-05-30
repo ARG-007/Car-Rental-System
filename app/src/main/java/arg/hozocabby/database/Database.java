@@ -4,7 +4,7 @@ import java.util.*;
 import arg.hozocabby.database.entities.Place;
 import arg.hozocabby.database.entities.RentalInfo;
 import arg.hozocabby.database.entities.vehicle.*;
-import arg.hozocabby.database.entities.person.*;
+import arg.hozocabby.database.entities.user.*;
 
 public class Database {
     private static Database db;
@@ -23,15 +23,16 @@ public class Database {
         return db;
     }
 
-    List<Place> places = new ArrayList<>();
-    List<Vehicle> vehicles = new ArrayList<>();
-    List<Owner> owners = new ArrayList<>();
-    List<Customer> customers = new ArrayList<>();
-    List<Driver> drivers = new ArrayList<>();
-    HashMap<Integer, RentalInfo> rentals = new HashMap<>();
+    public Map<Integer, Place> places = new HashMap<>();
+    public List<Vehicle> vehicles = new ArrayList<>();
+    public Map<String, User> users = new HashMap<>();
+    public List<Driver> drivers = new ArrayList<>();
+    public Map<Integer, RentalInfo> rentals = new HashMap<>();
 
 
     private void loadDatabase(){
 
     }
+
+
 }

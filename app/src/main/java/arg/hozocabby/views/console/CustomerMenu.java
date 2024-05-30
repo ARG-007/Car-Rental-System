@@ -1,7 +1,7 @@
 package arg.hozocabby.views.console;
 
 import arg.hozocabby.database.entities.RentalInfo;
-import arg.hozocabby.database.entities.person.Customer;
+import arg.hozocabby.database.entities.user.Customer;
 
 public class CustomerMenu extends Console{
     private Customer customer;

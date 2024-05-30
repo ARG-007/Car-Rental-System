@@ -20,6 +20,11 @@ abstract class Console implements View{
         return input.nextLine();
     }
 
+    protected void clearScreen(){
+
+    }
+
+
     protected Integer integerInput(String prompt){
         return Integer.parseInt(input(prompt));
     }
