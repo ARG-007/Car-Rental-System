@@ -1,6 +1,6 @@
 package arg.hozocabby.managers;
 
-import arg.hozocabby.database.entities.user.*;
+import arg.hozocabby.database.entities.Account;
 import arg.hozocabby.database.Database;
 
 import java.util.Optional;
@@ -12,21 +12,21 @@ public class AuthenticationManager {
         this.db = db;
     }
 
-    public Optional<User> getUser(String name) {
+    public Optional<Account> getUser(String name) {
         return Optional.ofNullable(db.users.get(name));
     }
 
 
-    public User login(String phone, String pass, UserType type) throws IllegalArgumentException{
+    public Account login(String phone, String password, Account.UserType type) throws IllegalArgumentException{
 
 
-        Optional<User> loggedInUser = getUser(phone);
+        Optional<Account> loggedInUser = getUser(phone);
         if(loggedInUser.isEmpty()) {
             throw new IllegalArgumentException("NO SUCH USER PRESENT");
         }
 
 
-        if(! loggedInUser.get().getPassword().equals(pass)){
+        if(! loggedInUser.get().getPassword().equals(password)){
             throw new IllegalArgumentException("INCORRECT PASSWORD");
         }
 
@@ -37,19 +37,15 @@ public class AuthenticationManager {
         return loggedInUser.get();
     }
 
-    public User register(String name, String phone, String address, UserType type, String password) throws IllegalArgumentException{
+    public Account register(String name, String phone, String address, Account.UserType type, String password) throws IllegalArgumentException{
         if(getUser(phone).isPresent()) {
             throw new IllegalArgumentException("USER ALREADY EXISTS");
         }
 
-        User regUser = switch(type) {
-            case Customer -> new Customer(db.users.size(), name, phone, address, password);
-            case Owner -> new Owner(db.users.size(), name, phone, address, password);
-            case Driver -> new Driver(db.users.size(), name, phone, address, password);
-        };
+        Account regAccount = new Account(db.users.size(), name, phone, address, password, type);
 
-        db.users.put(phone, regUser);
+        db.users.put(phone, regAccount);
 
-        return regUser;
+        return regAccount;
     }
 }

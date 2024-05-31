@@ -3,13 +3,11 @@ package arg.hozocabby.database;
 import java.util.*;
 import arg.hozocabby.database.entities.Place;
 import arg.hozocabby.database.entities.RentalInfo;
-import arg.hozocabby.database.entities.vehicle.*;
-import arg.hozocabby.database.entities.user.*;
+import arg.hozocabby.database.entities.Account;
+import arg.hozocabby.database.entities.Vehicle;
 
 public class Database {
     private static Database db;
-
-
 
     private Database(){
         loadDatabase();
@@ -24,9 +22,8 @@ public class Database {
     }
 
     public Map<Integer, Place> places = new HashMap<>();
-    public List<Vehicle> vehicles = new ArrayList<>();
-    public Map<String, User> users = new HashMap<>();
-    public List<Driver> drivers = new ArrayList<>();
+    public Map<Integer, Vehicle> vehicles = new HashMap<>();
+    public Map<String, Account> users = new HashMap<>();
     public Map<Integer, RentalInfo> rentals = new HashMap<>();
 
 

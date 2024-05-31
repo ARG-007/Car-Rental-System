@@ -8,7 +8,9 @@ public class CustomerMenu extends Console{
 
     private RentalInfo rental = new RentalInfo();
 
-
+    public CustomerMenu(Customer cus){
+        this.customer = cus;
+    }
 
     public void showMenu(){
         separator('~');
@@ -43,8 +45,6 @@ public class CustomerMenu extends Console{
     void rentMenu(){
 
         int choice;
-
-
 
         do {
             separator('@');

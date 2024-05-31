@@ -1,4 +1,4 @@
-package arg.hozocabby.database.entities.vehicle;
+package arg.hozocabby.database.entities;
 
 import arg.hozocabby.database.entities.user.Owner;
 
@@ -6,7 +6,7 @@ public class Vehicle {
 
     private int id, seats;
     private double chargePerKm, mileage;
-    private Owner owner;
+    private Account owner;
     private FuelType  fuelType;
     VehicleType vehicleType;
 
@@ -36,7 +36,7 @@ public class Vehicle {
         return mileage;
     }
 
-    public Owner getOwner() {
+    public Account getOwner() {
         return owner;
     }
 
@@ -48,4 +48,16 @@ public class Vehicle {
         return vehicleType;
     }
 
+    public enum VehicleType {
+        SEDAN,
+        HATCHBACK,
+        SUV,
+        MUV
+    }
+
+    public enum FuelType {
+        Petrol,
+        CNG,
+        Diesel
+    }
 }

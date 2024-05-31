@@ -1,9 +1,9 @@
 package arg.hozocabby.database.entities.user;
 
-public final class Driver extends User {
-    public Driver(int id, String name,String address, String phone, String password ) {
-        super(id, name, address, phone, password);
+import arg.hozocabby.database.entities.Account;
 
-        this.type = UserType.Driver;
+public final class Driver extends Account {
+    public Driver(int id, String name,String address, String phone, String password ) {
+        super(id, name, address, phone, password, UserType.Driver);
     }
 }

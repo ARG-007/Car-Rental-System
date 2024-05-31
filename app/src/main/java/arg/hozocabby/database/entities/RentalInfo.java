@@ -1,15 +1,15 @@
 package arg.hozocabby.database.entities;
 
-import arg.hozocabby.database.entities.user.*;
-import arg.hozocabby.database.entities.vehicle.*;
+import java.util.Date;
 
 public class RentalInfo {
     private int id;
 
-    private Customer requester;
+    private Account requester;
     private Vehicle requestedVehicle;
-//    Driver driver;
+    private Account driver;
     private Place pickup, destination;
+    private Date pickupTime, reachedTime;
     private double distance;
 
     private double fare;
