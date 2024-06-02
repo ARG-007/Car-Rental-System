@@ -6,24 +6,23 @@ import arg.hozocabby.managers.AuthenticationManager;
 import java.util.NoSuchElementException;
 import java.util.InputMismatchException;
 
-public class LoginMenu extends Console {
+public class AuthenticationMenu extends Console {
     private static final int EXIT_NUM = Account.UserType.size();
     private Account.UserType selectedUserType;
     private AuthenticationManager authMan;
 
-    public LoginMenu(AuthenticationManager authMan){
+    public AuthenticationMenu(AuthenticationManager authMan){
         this.authMan = authMan;
     }
 
     private boolean userSelectionMenu(){
 
         int userType;
-        clearScreen();
         separator('=');
         System.out.println("User Selection");
         separator('-');
         for (Account.UserType type : Account.UserType.values()){
-            System.out.printf("\t%d: %s\n", type.ordinal(), type);
+            System.out.printf("\t%d: %s\n", type.getOrdinal(), type);
         }
         System.out.printf("\t%d: Exit\n", EXIT_NUM);
         separator('=');
@@ -53,7 +52,7 @@ public class LoginMenu extends Console {
     }
 
     private int authenticationSelectionMenu(){
-        clearScreen();
+
         int authenticationMode;
         separator('@');
         System.out.printf("Selected User Type: %s\n", selectedUserType);
@@ -77,7 +76,7 @@ public class LoginMenu extends Console {
             }
 
         }
-        clearScreen();
+
         return authenticationMode;
     }
 
@@ -86,11 +85,16 @@ public class LoginMenu extends Console {
         boolean exit;
 
         while(true){
+            clearScreen();
             exit = userSelectionMenu();
+            clearScreen();
+
             if(exit)
                 return;
 
+            clearScreen();
             int authenMode = authenticationSelectionMenu();
+            clearScreen();
 
             Account loggedInAccount;
 

@@ -1,6 +1,8 @@
 package arg.hozocabby.database.entities;
 
-import arg.hozocabby.database.entities.user.Owner;
+
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 public class Vehicle {
 
@@ -11,7 +13,7 @@ public class Vehicle {
     VehicleType vehicleType;
 
 
-    public Vehicle(int id, VehicleType vehicleType, Owner owner, int seats, double cpk, double mileage,FuelType fuelType){
+    public Vehicle(int id, VehicleType vehicleType, Account owner, int seats, double cpk, double mileage,FuelType fuelType){
         this.id = id;
         this.vehicleType = vehicleType;
         this.owner = owner;
@@ -49,15 +51,63 @@ public class Vehicle {
     }
 
     public enum VehicleType {
-        SEDAN,
-        HATCHBACK,
-        SUV,
-        MUV
+        SEDAN(1),
+        HATCHBACK(2),
+        SUV(3),
+        MAXICAB(4);
+
+        private final int ordinal;
+        private final static VehicleType[] values;
+
+        static {
+            values = values();
+        }
+
+        VehicleType(int ord){
+            ordinal = ord;
+        }
+
+        public int getOrdinal(){
+            return ordinal;
+        }
+
+
+        public static VehicleType valueOf(int ordinal) throws NoSuchElementException {
+            return Arrays.stream(values).findFirst().filter(e -> e.getOrdinal()==ordinal).orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
+        }
+
+        public static int size(){
+            return values.length;
+        }
     }
 
     public enum FuelType {
-        Petrol,
-        CNG,
-        Diesel
+        Petrol(1),
+        Diesel(2),
+        CNG(3);
+
+        private final int ordinal;
+        private final static FuelType[] values;
+
+        static {
+            values = values();
+        }
+
+        FuelType(int ord){
+            ordinal = ord;
+        }
+
+        public int getOrdinal(){
+            return ordinal;
+        }
+
+
+        public static FuelType valueOf(int ordinal) throws NoSuchElementException {
+            return Arrays.stream(values).findFirst().filter(e -> e.getOrdinal()==ordinal).orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
+        }
+
+        public static int size(){
+            return values.length;
+        }
     }
 }

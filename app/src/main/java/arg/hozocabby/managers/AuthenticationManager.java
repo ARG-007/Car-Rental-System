@@ -13,7 +13,7 @@ public class AuthenticationManager {
     }
 
     public Optional<Account> getUser(String name) {
-        return Optional.ofNullable(db.users.get(name));
+        return Optional.ofNullable(db.Accounts.get(name));
     }
 
 
@@ -42,9 +42,9 @@ public class AuthenticationManager {
             throw new IllegalArgumentException("USER ALREADY EXISTS");
         }
 
-        Account regAccount = new Account(db.users.size(), name, phone, address, password, type);
+        Account regAccount = new Account(db.Accounts.size(), name, phone, address, password, type);
 
-        db.users.put(phone, regAccount);
+        db.Accounts.put(phone, regAccount);
 
         return regAccount;
     }

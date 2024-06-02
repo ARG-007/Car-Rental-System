@@ -1,6 +1,6 @@
 package arg.hozocabby.database.entities;
 
-public record Place(String name, double latitude, double longitude) {
+public record Place(int id, String name, double latitude, double longitude) {
     /**
      * Uses Standard two point distance calculation.
      * @param b Place to be calculated for distance

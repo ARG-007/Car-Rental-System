@@ -1,14 +1,14 @@
 package arg.hozocabby.views.console;
 
 import arg.hozocabby.database.entities.RentalInfo;
-import arg.hozocabby.database.entities.user.Customer;
+import arg.hozocabby.database.entities.Account;
 
 public class CustomerMenu extends Console{
-    private Customer customer;
+    private Account customer;
 
     private RentalInfo rental = new RentalInfo();
 
-    public CustomerMenu(Customer cus){
+    public CustomerMenu(Account cus){
         this.customer = cus;
     }
 

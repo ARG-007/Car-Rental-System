@@ -15,6 +15,7 @@ cus --> (Payment)
 note left of (Payment) : At Drop Point
 
 rectangle Renting {
+left to right direction
 (Set / Change Pickup)
 (Rent) .down-> (Renting) : <<includes>>
 (Set / Change Pickup Time)

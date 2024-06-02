@@ -1,5 +1,6 @@
 package arg.hozocabby.database.entities;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class Account {
@@ -42,20 +43,29 @@ public class Account {
     }
 
     public enum UserType {
-        Customer,
-        Owner,
-        Driver;
+        ADMIN(1),
+        CUSTOMER(2),
+        OWNER(3),
+        DRIVER(4);
 
+        private final int ordinal;
         private final static UserType[] values;
 
         static {
             values = values();
         }
 
+        UserType(int ord){
+            ordinal = ord;
+        }
+
+        public int getOrdinal(){
+            return ordinal;
+        }
+
+
         public static UserType valueOf(int ordinal) throws NoSuchElementException {
-            if(ordinal < 0 || ordinal > size())
-                throw new NoSuchElementException("Enum Has No Constant With That Ordinal");
-            return values[ordinal];
+            return Arrays.stream(values).findFirst().filter(e -> e.getOrdinal()==ordinal).orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
         }
 
         public static int size(){
