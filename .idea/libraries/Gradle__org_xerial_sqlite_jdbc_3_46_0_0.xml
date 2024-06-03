@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.46.0.0/aa79a7b3fd17b70ca7cb4cc894d5c8488c60aabe/sqlite-jdbc-3.46.0.0.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.46.0.0/4ccb85dfd362c147d622864a5df0d3f15fe7cd8a/sqlite-jdbc-3.46.0.0-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

@@ -1,0 +1,83 @@
+@startuml
+
+class Account{
+    -int id
+    -String name
+    -String mobile
+    -String address
+    -String password
+    -UserType type
+
+    +getters()
+}
+
+Account *-right- Usertype
+
+Enum Usertype{
+    ADMIN
+    CUSTOMER
+    OWNER
+    DRIVER
+}
+
+
+
+class Place{
+    -int id
+    -String name
+    -double lat
+    -double long
+
+    +distanceBetween(Place b)
+}
+
+class RentalInfo{
+    -int id
+    -Account requester
+    -Vehicle requestedVehicle
+    -Place Pickup
+    -Place Destination
+    -DateTime startTime
+    -DateTime endTime
+    -double fare
+
+    +calculateFare()
+    +setters()
+}
+
+class Vehicle{
+    -int id
+    -double chargePerKm
+    -double mileage
+    -Account owner
+    -FuelType fuelType
+    -VehicleType vehicleType
+
+    +getVehicleType() : VehicleType
+    +getCapacity() : int
+    +getFuelType() : FuelType
+    +getOwner() : Account
+}
+
+Enum FuelType {
+    Petrol
+    CNG
+    Diesel
+}
+
+Enum VehicleType {
+    Hatchback
+    SUV
+    Sedan
+    MaxiCab
+}
+
+Vehicle *-- FuelType
+Vehicle *-- VehicleType
+
+RentalInfo o-up- Account
+RentalInfo o-left- Place
+RentalInfo o-right- Vehicle
+
+hide empty members
+@enduml

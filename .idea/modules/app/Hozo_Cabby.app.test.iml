@@ -8,6 +8,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Hozo_Cabby.app.main" />
     <orderEntry type="library" name="Gradle: org.xerial:sqlite-jdbc:3.46.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-simple:1.7.36" level="project" />
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.36" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="Hozo_Cabby.app.main" />

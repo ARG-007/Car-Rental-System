@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class Account {
-    protected int id;
-    protected String name, address;
-    protected String phone;
-    protected UserType type;
-    protected String password;
+    private int id;
+    private String name, address;
+    private String phone;
+    private UserType type;
+    private String password;
 
     public Account(int id, String name, String address, String phone, String password, UserType type ){
         this.id=id;
@@ -34,8 +34,8 @@ public class Account {
         return phone;
     }
 
-    public String getPassword() {
-        return password;
+    public boolean passwordCheck(String password){
+        return this.password.equals(password);
     }
 
     public UserType getType(){
@@ -43,10 +43,10 @@ public class Account {
     }
 
     public enum UserType {
-        ADMIN(1),
-        CUSTOMER(2),
+        CUSTOMER(1),
+        DRIVER(2),
         OWNER(3),
-        DRIVER(4);
+        ADMIN(4);
 
         private final int ordinal;
         private final static UserType[] values;

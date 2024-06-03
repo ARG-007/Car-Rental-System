@@ -1,18 +1,18 @@
 @startuml
-actor "Registered User" as cus
+
 actor Owner as own
 actor Driver as driver
+actor "Registered User" as cus
+actor admin
 
 
 "Rent a Car" as (Rent)
 "View Rentals" as (View Rents)
 
-cus --> (Rent)
-cus --> (View Rents)
-cus --> (Cancel Rent)
-cus --> (Payment)
 
-note left of (Payment) : At Drop Point
+admin --> (View All Rentals)
+admin --> (View Accounts)
+admin --> (View Vehicles)
 
 rectangle Renting {
 left to right direction
@@ -30,10 +30,17 @@ own --> (Remove Car)
 own --> (View Earnings)
 own --> (View Earnings from Specific Car)
 
-(View Earnings) <|-- (View Earnings from Specific Car)
 
 driver --> (View Assigned Rental Job)
-driver --> (View Commisions)
+driver --> (View Earnings)
 driver --> (Cancel Assignment)
 driver --> (Declare Fare as Completed)
+
+cus --> (Rent)
+cus --> (View Rents)
+cus --> (Cancel Rent)
+cus --> (Payment)
+note bottom of (Payment) : At Drop Point
+
+
 @enduml

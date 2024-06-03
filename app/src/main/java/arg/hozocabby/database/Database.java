@@ -10,8 +10,7 @@ import arg.hozocabby.database.entities.Account;
 import arg.hozocabby.database.entities.Vehicle;
 import org.sqlite.SQLiteConfig;
 
-
-public class Database {
+public class Database{
     private static final String CONNECTION_URL = "jdbc:sqlite:HozoCabby.db";
     private static Database db;
     private Connection connection;
@@ -22,11 +21,12 @@ public class Database {
     static {
         CONN_CONFIG.setJournalMode(SQLiteConfig.JournalMode.WAL);
         CONN_CONFIG.enforceForeignKeys(true);
-
     }
 
-    private Database() throws SQLException{
-        initDatabase();
+    private Database() throws SQLException, IOException{
+        if(!validateDatabase()){
+            createDatabase();
+        }
 
         loadDatabase();
 
@@ -48,7 +48,7 @@ public class Database {
         return getConnection().prepareStatement(statement);
     }
 
-    public static Database getDatabase() throws SQLException{
+    public static Database getDatabase() throws SQLException, IOException{
         if(db == null){
             db = new Database();
         }
@@ -60,21 +60,24 @@ public class Database {
     public Map<String, Account> Accounts = new HashMap<>();
     public Map<Integer, RentalInfo> rentals = new HashMap<>();
 
-    private void initDatabase() throws SQLException{
+    private void createDatabase() throws SQLException, IOException{
 
         try(
                 Statement s = getStatement();
                 InputStream initializerFileStream = getClass().getClassLoader().getResourceAsStream("Database/DB_InitializerScript.sql");
-                BufferedReader initializeReader = new BufferedReader(new InputStreamReader(initializerFileStream));
+                Scanner scriptReader = new Scanner(new InputStreamReader(initializerFileStream))
         ){
-                Scanner scan = new Scanner(initializeReader);
+                scriptReader.useDelimiter("(;(\\r)?\\n)|((\\r)?\\n)?(--)?.*(--(\\r)?\\n)");
 
-                while(scan.hasNext()){
-                    System.out.println(scan.nextLine());
+                while(scriptReader.hasNext()) {
+                    s.execute(scriptReader.next());
                 }
-        } catch (IOException fnf){
 
         }
+    }
+
+    public AccountManager getAccountManager(){
+        return new AccountManager(db);
     }
 
     private boolean validateDatabase() {
@@ -88,6 +91,8 @@ public class Database {
 
 
     }
+
+
 
 
 }
