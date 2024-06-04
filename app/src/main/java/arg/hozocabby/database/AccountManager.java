@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class AccountManager {
     private Database db;
@@ -20,31 +21,33 @@ public class AccountManager {
         this.db = db;
     }
 
-    public void createAccount(Account account, String password) throws SQLException {
+    public Account createAccount(String name, String phone, String address, String password, Account.UserType type) throws SQLException {
 
         try(PreparedStatement statement = db.getPreparedStatement(ACCOUNT_CREATE)){
-            statement.setString(1, account.getName());
-            statement.setString(2, account.getPhone());
-            statement.setString(3, account.getAddress());
+            statement.setString(1, name);
+            statement.setString(2, phone);
+            statement.setString(3, address);
             statement.setString(4, password);
-            statement.setInt(5, account.getType().getOrdinal());
+            statement.setInt(5, type.getOrdinal());
 
             statement.execute();
 
             db.getConnection().commit();
+
+            return getAccountByMobile(phone).get();
         }
     }
 
-    public Account getAccountByID(int id) throws SQLException{
+    public Optional<Account> getAccountByID(int id) throws SQLException{
         try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_ID)){
             ps.setInt(1, id);
 
             ResultSet rs = ps.executeQuery();
 
             if(!rs.next())
-                throw new IllegalArgumentException("NO_ACCOUNT_EXISTS");
+                return Optional.ofNullable(null);
 
-            return constructAccountResultSet(rs);
+            return Optional.of(constructAccountResultSet(rs));
         }
     }
 
@@ -64,6 +67,8 @@ public class AccountManager {
         try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY)) {
             ResultSet rs = ps.executeQuery();
 
+            rs.updateRow();
+
             while(rs.next()){
                 accounts.add(constructAccountResultSet(rs));
             }
@@ -72,16 +77,16 @@ public class AccountManager {
         return accounts;
     }
 
-    public Account getAccount(String mobile) throws SQLException{
+    public Optional<Account> getAccountByMobile(String mobile) throws SQLException{
         try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_MOBILE)) {
             ps.setString(1, mobile);
 
             ResultSet rs = ps.executeQuery();
 
             if(rs.next())
-                return constructAccountResultSet(rs);
+                return Optional.of(constructAccountResultSet(rs));
             else
-                return null;
+                return Optional.ofNullable(null);
         }
     }
 

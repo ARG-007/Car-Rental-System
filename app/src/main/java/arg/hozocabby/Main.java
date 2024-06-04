@@ -9,14 +9,28 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, IOException {
-        Database db = Database.getDatabase();
+    public static void main(String[] args){
+
+        try (Database db = Database.getDatabase()){
+
+            AuthenticationManager authMan = new AuthenticationManager(db.getAccountManager());
 
 
-        AuthenticationManager authMan = new AuthenticationManager(db);
+            View view = new AuthenticationMenu(authMan);
+            view.display();
+        } catch(SQLException e) {
+            System.out.println("Database Error" + e.getMessage());
+            e.printStackTrace();
+        } catch(IOException io){
+            System.out.println("IO Error" + io.getMessage());
+            io.printStackTrace();
+        } catch(Exception e) {
+//            System.out.println(e.printStackTrace());
+            e.printStackTrace();
+        } finally {
+
+        }
 
 
-        View view = new AuthenticationMenu(authMan);
-        view.display();
     }
 }

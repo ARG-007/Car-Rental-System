@@ -1,26 +1,22 @@
 package arg.hozocabby.managers;
 
+import arg.hozocabby.database.AccountManager;
 import arg.hozocabby.database.entities.Account;
-import arg.hozocabby.database.Database;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class AuthenticationManager {
-    Database db;
+    AccountManager accountMan;
 
-    public AuthenticationManager(Database db) {
-        this.db = db;
+    public AuthenticationManager(AccountManager accountMan) {
+        this.accountMan = accountMan;
     }
 
-    public Optional<Account> getUser(String name) {
-        return Optional.ofNullable(db.Accounts.get(name));
-    }
+    public Account login(String phone, String password, Account.UserType type) throws IllegalArgumentException, SQLException{
 
 
-    public Account login(String phone, String password, Account.UserType type) throws IllegalArgumentException{
-
-
-        Optional<Account> loggedInUser = getUser(phone);
+        Optional<Account> loggedInUser = accountMan.getAccountByMobile(phone);
         if(loggedInUser.isEmpty()) {
             throw new IllegalArgumentException("NO SUCH USER PRESENT");
         }
@@ -37,15 +33,11 @@ public class AuthenticationManager {
         return loggedInUser.get();
     }
 
-    public Account register(String name, String phone, String address, Account.UserType type, String password) throws IllegalArgumentException{
-        if(getUser(phone).isPresent()) {
+    public Account register(String name, String phone, String address, Account.UserType type, String password) throws IllegalArgumentException, SQLException{
+        if(accountMan.containsAccount(phone)) {
             throw new IllegalArgumentException("USER ALREADY EXISTS");
         }
 
-        Account regAccount = new Account(db.Accounts.size(), name, phone, address, password, type);
-
-        db.Accounts.put(phone, regAccount);
-
-        return regAccount;
+        return accountMan.createAccount(name, phone, address, password, type);
     }
 }

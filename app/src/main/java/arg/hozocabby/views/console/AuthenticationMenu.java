@@ -3,6 +3,7 @@ package arg.hozocabby.views.console;
 import arg.hozocabby.database.entities.Account;
 import arg.hozocabby.managers.AuthenticationManager;
 
+import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import java.util.InputMismatchException;
 
@@ -81,7 +82,7 @@ public class AuthenticationMenu extends Console {
     }
 
 
-    public void display(){
+    public void display() {
         boolean exit;
 
         while(true){
@@ -98,11 +99,16 @@ public class AuthenticationMenu extends Console {
 
             Account loggedInAccount;
 
-            switch (authenMode){
-                case 1: userLogin();break;
-                case 2: userRegister();break;
-                case 3: break;
-                case 4: return;
+            try {
+                switch (authenMode){
+                    case 1: userLogin();break;
+                    case 2: userRegister();break;
+                    case 3: break;
+                    case 4: return;
+                }
+            } catch(SQLException se){
+                System.out.println("Database Error: "+ se.getMessage());
+                System.exit(1);
             }
 
         }
@@ -112,7 +118,7 @@ public class AuthenticationMenu extends Console {
 
 
 
-    private void userLogin() {
+    private void userLogin() throws SQLException {
         clearScreen();
 
         int reAttempts = 3;
@@ -152,7 +158,7 @@ public class AuthenticationMenu extends Console {
         }
     }
 
-    private void userRegister(){
+    private void userRegister() throws SQLException{
         clearScreen();
         separator('=');
 

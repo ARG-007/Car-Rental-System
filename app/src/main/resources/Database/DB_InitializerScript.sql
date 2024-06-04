@@ -45,11 +45,11 @@ CREATE TABLE Vehicle (
     chargePerKm REAL,
     owner INTEGER,
     mileage REAL,
-    fuelType_id INTEGER,
-    vehicleType_id INTEGER,
+    fuelType INTEGER,
+    vehicleType INTEGER,
     FOREIGN KEY (owner) REFERENCES Account(id),
-    FOREIGN KEY (fuelType_id) REFERENCES FuelType(id),
-    FOREIGN KEY (vehicleType_id) REFERENCES VehicleType(id)
+    FOREIGN KEY (fuelType) REFERENCES FuelType(id),
+    FOREIGN KEY (vehicleType) REFERENCES VehicleType(id)
 );
 
 CREATE TABLE Place (
@@ -59,9 +59,6 @@ CREATE TABLE Place (
     long REAL
 );
 
-INSERT INTO Place(name, lat, long) VALUES
-()
-
 CREATE TABLE RentalStatus (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     status TEXT UNIQUE
@@ -69,28 +66,31 @@ CREATE TABLE RentalStatus (
 
 INSERT INTO RentalStatus (status) VALUES ('Pending'), ('Ongoing'), ('Completed'), ('Cancelled');
 
-CREATE TABLE Rental (
+CREATE TABLE Info (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     requester INTEGER ,
     requestedVehicle INTEGER,
-    driver INTEGER,
     pickupPlace INTEGER,
     destinationPlace INTEGER,
     pickupTime DATETIME,
-    FareEndTime DATETIME,
-    rentalStatus_id INTEGER,
+
     FOREIGN KEY (requester) REFERENCES Account(id),
     FOREIGN KEY (requestedVehicle) REFERENCES Vehicle(id),
-    FOREIGN KEY (driver) REFERENCES Account(id),
+
     FOREIGN KEY (pickupPlace) REFERENCES Place(id),
-    FOREIGN KEY (destinationPlace) REFERENCES Place(id),
-    FOREIGN KEY (rentalStatus) REFERENCES RentalStatus(id)
+    FOREIGN KEY (destinationPlace) REFERENCES Place(id)
 );
 
-CREATE TABLE Info (
+CREATE TABLE Rental (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    rental_id INTEGER,
+    info INTEGER UNIQUE NOT NULL,
+    driver INTEGER NOT NULL,
     distance REAL,
+    fareEndTime DATETIME,
     fareCost REAL,
-    FOREIGN KEY (rental_id) REFERENCES Rental(id)
+    status INTEGER NOT NULL,
+
+    FOREIGN KEY (driver) REFERENCES Account(id),
+    FOREIGN KEY (info) REFERENCES Info(id),
+    FOREIGN KEY (status) REFERENCES RentalStatus(id)
 );

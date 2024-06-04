@@ -10,7 +10,7 @@ import arg.hozocabby.database.entities.Account;
 import arg.hozocabby.database.entities.Vehicle;
 import org.sqlite.SQLiteConfig;
 
-public class Database{
+public class Database implements AutoCloseable{
     private static final String CONNECTION_URL = "jdbc:sqlite:HozoCabby.db";
     private static Database db;
     private Connection connection;
@@ -62,16 +62,21 @@ public class Database{
 
     private void createDatabase() throws SQLException, IOException{
 
+        executeFromSQLScript("Database/DB_InitializerScript.sql");
+        executeFromSQLScript("Database/CityAdderScript.sql");
+    }
+
+    private void executeFromSQLScript(String path) throws SQLException, IOException{
         try(
                 Statement s = getStatement();
-                InputStream initializerFileStream = getClass().getClassLoader().getResourceAsStream("Database/DB_InitializerScript.sql");
+                InputStream initializerFileStream = getClass().getClassLoader().getResourceAsStream(path);
                 Scanner scriptReader = new Scanner(new InputStreamReader(initializerFileStream))
         ){
-                scriptReader.useDelimiter("(;(\\r)?\\n)|((\\r)?\\n)?(--)?.*(--(\\r)?\\n)");
+            scriptReader.useDelimiter("(;(\\r)?\\n)|((\\r)?\\n)?(--)?.*(--(\\r)?\\n)");
 
-                while(scriptReader.hasNext()) {
-                    s.execute(scriptReader.next());
-                }
+            while(scriptReader.hasNext()) {
+                s.execute(scriptReader.next());
+            }
 
         }
     }
@@ -92,7 +97,9 @@ public class Database{
 
     }
 
-
+    public void close() throws SQLException{
+        connection.close();
+    }
 
 
 }

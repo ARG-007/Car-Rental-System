@@ -8,7 +8,11 @@ class Account{
     -String password
     -UserType type
 
-    +getters()
+    +getId()
+    +getName()
+    +getMobile()
+    +getAddress()
+    +validatePassword(): boolean
 }
 
 Account *-right- Usertype
@@ -80,4 +84,19 @@ RentalInfo o-left- Place
 RentalInfo o-right- Vehicle
 
 hide empty members
+
+interface View {
+    +display(): void
+}
+
+abstract Console{}
+
+View <|.. Console
+
+Console <|-- AuthenticationMenu
+Console <|-- CustomerMenu
+Console <|-- OwnerMenu
+Console <|-- DriverMenu
+
+
 @enduml
