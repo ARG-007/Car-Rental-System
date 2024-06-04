@@ -16,7 +16,7 @@ public class Database implements AutoCloseable{
     private Connection connection;
     private static final SQLiteConfig CONN_CONFIG = new SQLiteConfig();
 
-
+    private final AccountManager accountManager;
 
     static {
         CONN_CONFIG.setJournalMode(SQLiteConfig.JournalMode.WAL);
@@ -30,6 +30,7 @@ public class Database implements AutoCloseable{
 
         loadDatabase();
 
+        accountManager = new AccountManager(db);
     }
 
     Connection getConnection() throws SQLException{

@@ -6,16 +6,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 public class AccountManager {
-    private Database db;
+    private final Database db;
 
     private final static String ACCOUNT_CREATE = "INSERT INTO Account(name, mobile, address, password, userType) VALUES (?, ?, ?, ?, ?)";
     private final static String ACCOUNT_QUERY = "SELECT * FROM Account ";
     private final static String ACCOUNT_QUERY_BY_MOBILE = ACCOUNT_QUERY+" WHERE mobile = ?";
     private final static String ACCOUNT_QUERY_BY_ID = ACCOUNT_QUERY+" WHERE id = ?";
 
+    private final HashMap<Integer, Account> accountRefs = new HashMap<>();
 
     AccountManager(Database db){
         this.db = db;
@@ -32,13 +35,18 @@ public class AccountManager {
 
             statement.execute();
 
-            db.getConnection().commit();
-
             return getAccountByMobile(phone).get();
         }
     }
 
+    private Account saveToRef(Account acc){
+        accountRefs.put(acc.getId(), acc);
+        return acc;
+    }
+
     public Optional<Account> getAccountByID(int id) throws SQLException{
+        if(accountRefs.containsKey(id))
+            return Optional.of(accountRefs.get(id));
         try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_ID)){
             ps.setInt(1, id);
 
@@ -47,7 +55,8 @@ public class AccountManager {
             if(!rs.next())
                 return Optional.ofNullable(null);
 
-            return Optional.of(constructAccountResultSet(rs));
+
+            return Optional.of(saveToRef(constructAccountResultSet(rs)));
         }
     }
 
@@ -62,7 +71,7 @@ public class AccountManager {
         );
     }
 
-    public ArrayList<Account> getAllAccounts() throws SQLException{
+    public List<Account> getAllAccounts() throws SQLException{
         ArrayList<Account> accounts = new ArrayList<>();
         try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY)) {
             ResultSet rs = ps.executeQuery();
@@ -70,7 +79,7 @@ public class AccountManager {
             rs.updateRow();
 
             while(rs.next()){
-                accounts.add(constructAccountResultSet(rs));
+                accounts.add(saveToRef(constructAccountResultSet(rs)));
             }
         }
 
@@ -84,7 +93,7 @@ public class AccountManager {
             ResultSet rs = ps.executeQuery();
 
             if(rs.next())
-                return Optional.of(constructAccountResultSet(rs));
+                return Optional.of(saveToRef(constructAccountResultSet(rs)));
             else
                 return Optional.ofNullable(null);
         }

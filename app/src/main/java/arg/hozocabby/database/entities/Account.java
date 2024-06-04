@@ -35,7 +35,7 @@ public class Account {
         return phone;
     }
 
-    public boolean passwordCheck(String password){
+    public boolean verifyPassword(String password){
         return this.password.equals(password);
     }
 

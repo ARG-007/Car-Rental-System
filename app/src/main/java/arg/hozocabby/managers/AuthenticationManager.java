@@ -22,7 +22,7 @@ public class AuthenticationManager {
         }
 
 
-        if(! loggedInUser.get().passwordCheck(password)){
+        if(! loggedInUser.get().verifyPassword(password)){
             throw new IllegalArgumentException("INCORRECT PASSWORD");
         }
 

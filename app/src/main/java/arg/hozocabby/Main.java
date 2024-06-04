@@ -12,10 +12,7 @@ public class Main {
     public static void main(String[] args){
 
         try (Database db = Database.getDatabase()){
-
             AuthenticationManager authMan = new AuthenticationManager(db.getAccountManager());
-
-
             View view = new AuthenticationMenu(authMan);
             view.display();
         } catch(SQLException e) {
@@ -25,10 +22,7 @@ public class Main {
             System.out.println("IO Error" + io.getMessage());
             io.printStackTrace();
         } catch(Exception e) {
-//            System.out.println(e.printStackTrace());
             e.printStackTrace();
-        } finally {
-
         }
 
 
