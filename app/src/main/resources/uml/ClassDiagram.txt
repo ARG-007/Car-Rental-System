@@ -97,6 +97,7 @@ Console <|-- AuthenticationMenu
 Console <|-- CustomerMenu
 Console <|-- OwnerMenu
 Console <|-- DriverMenu
+Console <|-- AdminMenu
 
 
 @enduml

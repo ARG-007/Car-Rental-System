@@ -11,10 +11,10 @@ import java.util.Optional;
 public class AccountManager {
     private Database db;
 
-    private final static String ACCOUNT_CREATE = "INSERT INTO Account(name, mobile, address, password, userType) VALUES (%s, %s, %s, %s, %d)";
+    private final static String ACCOUNT_CREATE = "INSERT INTO Account(name, mobile, address, password, userType) VALUES (?, ?, ?, ?, ?)";
     private final static String ACCOUNT_QUERY = "SELECT * FROM Account ";
-    private final static String ACCOUNT_QUERY_BY_MOBILE = ACCOUNT_QUERY+" WHERE mobile = %s";
-    private final static String ACCOUNT_QUERY_BY_ID = ACCOUNT_QUERY+" WHERE id=%d";
+    private final static String ACCOUNT_QUERY_BY_MOBILE = ACCOUNT_QUERY+" WHERE mobile = ?";
+    private final static String ACCOUNT_QUERY_BY_ID = ACCOUNT_QUERY+" WHERE id = ?";
 
 
     AccountManager(Database db){
