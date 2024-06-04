@@ -6,11 +6,12 @@ import arg.hozocabby.managers.AuthenticationManager;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import java.util.InputMismatchException;
+import java.util.Optional;
 
 public class AuthenticationMenu extends Console {
-    private static final int EXIT_NUM = Account.UserType.size();
+    private static final int EXIT_NUM = Account.UserType.size()+1;
     private Account.UserType selectedUserType;
-    private AuthenticationManager authMan;
+    private final AuthenticationManager authMan;
 
     public AuthenticationMenu(AuthenticationManager authMan){
         this.authMan = authMan;
@@ -97,18 +98,27 @@ public class AuthenticationMenu extends Console {
             int authenMode = authenticationSelectionMenu();
             clearScreen();
 
-            Account loggedInAccount;
+            Optional<Account> loggedInAccount = Optional.empty();
 
             try {
                 switch (authenMode){
-                    case 1: userLogin();break;
-                    case 2: userRegister();break;
+                    case 1: loggedInAccount = userLogin();break;
+                    case 2: loggedInAccount = userRegister();break;
                     case 3: break;
                     case 4: return;
                 }
             } catch(SQLException se){
                 System.out.println("Database Error: "+ se.getMessage());
                 System.exit(1);
+            }
+
+            if(loggedInAccount.isPresent()){
+                switch(loggedInAccount.get().getType()){
+                    case ADMIN -> new AdminMenu().display();
+                    case CUSTOMER -> new CustomerMenu(loggedInAccount.get()).display();
+                    case OWNER -> new OwnerMenu().display();
+                    case DRIVER -> new DriverMenu().display();
+                }
             }
 
         }
@@ -118,22 +128,24 @@ public class AuthenticationMenu extends Console {
 
 
 
-    private void userLogin() throws SQLException {
+    private Optional<Account> userLogin() throws SQLException {
         clearScreen();
+        Account account = null;
 
         int reAttempts = 3;
         separator('+');
         System.out.printf("User Mode : %s\nAuthentication Mode: Login\n", selectedUserType);
         separator('-');
 
+        attemptLoop:
         while(reAttempts > 0){
             String mobile = input("Enter Your Mobile: ");
             String password = input("Enter Your Password: ");
-
             separator('.');
 
             try {
-                Account account = authMan.login(mobile, password, selectedUserType);
+                account = authMan.login(mobile, password, selectedUserType);
+                break;
             } catch (IllegalArgumentException e){
                 switch(e.getMessage()){
                     case "NO SUCH USER PRESENT":
@@ -145,8 +157,7 @@ public class AuthenticationMenu extends Console {
                     case "USER IS NOT AUTHORIZED":
                         System.out.println("You Do Not Have Access");
                         System.out.println("You will be redirected to User Mode Selection Menu When You Press Enter");
-
-                        return;
+                        break attemptLoop;
                 }
 
                 reAttempts--;
@@ -155,33 +166,34 @@ public class AuthenticationMenu extends Console {
             } finally {
                 separator('-');
             }
+
         }
+        return Optional.ofNullable(account);
     }
 
-    private void userRegister() throws SQLException{
+    private Optional<Account> userRegister() throws SQLException{
         clearScreen();
         separator('=');
-
+        Account acc;
         System.out.printf("Selected User Type: %s\t Authentication Mode: Registration\n", selectedUserType);
 
         separator('+');
         while(true) {
 
-            String name = input("Enter Name");
+            String name = input("Enter Name: ");
             String phone = input("Enter Mobile Number: ");
             String address = input("Enter Your Address: ");
             String password = input("Enter An Password: ");
 
             try {
-                authMan.register(name, phone, address, selectedUserType, password);
+                acc = authMan.register(name, phone, address, selectedUserType, password);
                 break;
             } catch (IllegalArgumentException iea){
                 switch(input("An Account for that Mobile Number already Exists, Login Instead [Y/n] ?: ")){
                     case "\n":
                     case "Y":
                     case "y":
-                        userLogin();
-                        return;
+                        return userLogin();
                     case "N":
                     case "n":
                         System.out.println("Redoing Registration, Use Different Mobile Number");
@@ -193,5 +205,6 @@ public class AuthenticationMenu extends Console {
             separator('+');
 
         }
+        return Optional.ofNullable(acc);
     }
 }

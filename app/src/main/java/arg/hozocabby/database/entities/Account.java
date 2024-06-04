@@ -4,18 +4,19 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class Account {
-    private int id;
-    private String name, address;
-    private String phone;
-    private UserType type;
-    private String password;
+    private final int id;
+    private final String name, address;
+    private final String phone;
+    private final UserType type;
+    private final String password;
 
     public Account(int id, String name, String address, String phone, String password, UserType type ){
-        this.id=id;
+        this.id = id;
         this.name = name;
         this.address = address;
         this.phone = phone;
         this.password = password;
+        this.type = type;
     }
 
     public int getId() {
