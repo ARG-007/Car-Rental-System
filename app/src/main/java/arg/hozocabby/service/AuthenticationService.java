@@ -1,17 +1,16 @@
-package arg.hozocabby.managers;
+package arg.hozocabby.service;
 
 import arg.hozocabby.database.AccountDataAccess;
 import arg.hozocabby.entities.Account;
 import arg.hozocabby.exceptions.DataAccessException;
 import arg.hozocabby.exceptions.DataSourceException;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
-public class AuthenticationManager {
+public class AuthenticationService {
     AccountDataAccess accountMan;
 
-    public AuthenticationManager(AccountDataAccess accountMan) {
+    public AuthenticationService(AccountDataAccess accountMan) {
         this.accountMan = accountMan;
     }
 

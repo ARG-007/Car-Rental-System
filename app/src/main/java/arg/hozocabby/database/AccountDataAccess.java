@@ -26,6 +26,38 @@ public class AccountDataAccess {
         this.db = db;
     }
 
+    private void saveToInternalReferenceMap(Account acc){
+        accountReferenceMap.put(acc.getId(), acc);
+    }
+
+    private Account constructAccountResultSet(ResultSet rs) throws DataAccessException{
+
+        try {
+            return new Account(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("address"),
+                    rs.getString("mobile"),
+                    rs.getString("password"),
+                    Account.UserType.valueOf(rs.getInt("userType"))
+            );
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex);
+        }
+    }
+
+    public boolean containsAccount(String mobile) throws DataAccessException, DataSourceException{
+        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_MOBILE)){
+            ps.setString(1, mobile);
+
+            ResultSet rs = ps.executeQuery();
+
+            return rs.next();
+        } catch (SQLException ex){
+            throw new DataAccessException(ex);
+        }
+    }
+
     public Account createAccount(String name, String phone, String address, String password, Account.UserType type) throws DataAccessException, DataSourceException {
 
         try(PreparedStatement statement = db.getPreparedStatement(ACCOUNT_CREATE)){
@@ -37,14 +69,18 @@ public class AccountDataAccess {
 
             statement.execute();
 
-            return getAccountByMobile(phone).get();
+            ResultSet rs = statement.executeQuery("SELECT last_insert_id()");
+            rs.next();
+            int id = rs.getInt(1);
+
+            Account acc = new Account(id, name, address, phone, password, type);
+
+            saveToInternalReferenceMap(acc);
+
+            return acc;
         } catch (SQLException ex){
             throw new DataAccessException(ex);
         }
-    }
-
-    private void saveToInternalReferenceMap(Account acc){
-        accountReferenceMap.put(acc.getId(), acc);
     }
 
     public Optional<Account> getAccountByID(int id) throws DataAccessException, DataSourceException{
@@ -68,18 +104,22 @@ public class AccountDataAccess {
         }
     }
 
-    private Account constructAccountResultSet(ResultSet rs) throws DataAccessException{
+    public Optional<Account> getAccountByMobile(String mobile) throws DataSourceException, DataAccessException{
+        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_MOBILE)) {
+            ps.setString(1, mobile);
 
-        try {
-            return new Account(
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getString("address"),
-                    rs.getString("mobile"),
-                    rs.getString("password"),
-                    Account.UserType.valueOf(rs.getInt("userType"))
-            );
-        } catch (SQLException ex) {
+            ResultSet rs = ps.executeQuery();
+
+            if(rs.next()){
+                Account createdAccount = constructAccountResultSet(rs);
+
+                saveToInternalReferenceMap(createdAccount);
+
+                return Optional.of(createdAccount);
+            }
+            else
+                return Optional.ofNullable(null);
+        } catch (SQLException ex){
             throw new DataAccessException(ex);
         }
     }
@@ -105,38 +145,6 @@ public class AccountDataAccess {
         }
 
         return accounts;
-    }
-
-    public Optional<Account> getAccountByMobile(String mobile) throws DataSourceException, DataAccessException{
-        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_MOBILE)) {
-            ps.setString(1, mobile);
-
-            ResultSet rs = ps.executeQuery();
-
-            if(rs.next()){
-                Account createdAccount = constructAccountResultSet(rs);
-
-                saveToInternalReferenceMap(createdAccount);
-
-                return Optional.of(createdAccount);
-            }
-            else
-                return Optional.ofNullable(null);
-        } catch (SQLException ex){
-            throw new DataAccessException(ex);
-        }
-    }
-
-    public boolean containsAccount(String mobile) throws DataAccessException, DataSourceException{
-        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_MOBILE)){
-            ps.setString(1, mobile);
-
-            ResultSet rs = ps.executeQuery();
-
-            return rs.next();
-        } catch (SQLException ex){
-            throw new DataAccessException(ex);
-        }
     }
 
 }

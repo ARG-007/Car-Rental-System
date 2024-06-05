@@ -3,9 +3,8 @@ package arg.hozocabby.views.console;
 import arg.hozocabby.entities.Account;
 import arg.hozocabby.exceptions.DataAccessException;
 import arg.hozocabby.exceptions.DataSourceException;
-import arg.hozocabby.managers.AuthenticationManager;
+import arg.hozocabby.service.AuthenticationService;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.InputMismatchException;
 import java.util.Optional;
@@ -13,10 +12,10 @@ import java.util.Optional;
 public class AuthenticationMenu extends Console {
     private static final int EXIT_NUM = Account.UserType.size()+1;
     private Account.UserType selectedUserType;
-    private final AuthenticationManager authMan;
+    private final AuthenticationService authService;
 
-    public AuthenticationMenu(AuthenticationManager authMan){
-        this.authMan = authMan;
+    public AuthenticationMenu(AuthenticationService authService){
+        this.authService = authService;
     }
 
     private boolean userSelectionMenu(){
@@ -145,7 +144,7 @@ public class AuthenticationMenu extends Console {
             separator('.');
 
             try {
-                account = authMan.login(mobile, password, selectedUserType);
+                account = authService.login(mobile, password, selectedUserType);
                 break;
             } catch (IllegalArgumentException e){
                 switch(e.getMessage()){
@@ -192,20 +191,18 @@ public class AuthenticationMenu extends Console {
             String password = input("Enter An Password: ");
 
             try {
-                acc = authMan.register(name, phone, address, selectedUserType, password);
+                acc = authService.register(name, phone, address, selectedUserType, password);
                 break;
             } catch (IllegalArgumentException iea){
                 switch(input("An Account for that Mobile Number already Exists, Login Instead [Y/n] ?: ")){
-                    case "\n":
-                    case "Y":
-                    case "y":
-                        return userLogin();
                     case "N":
                     case "n":
                         System.out.println("Redoing Registration, Use Different Mobile Number");
                         break;
+                    case "Y":
+                    case "y":
                     default:
-                        System.out.println("Invalid Input, Redoing Registration, Use Different Mobile Number");
+                        return userLogin();
                 }
             } catch(DataAccessException dae) {
                 System.err.println(dae);

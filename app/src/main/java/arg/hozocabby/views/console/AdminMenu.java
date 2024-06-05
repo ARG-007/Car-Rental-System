@@ -2,8 +2,7 @@ package arg.hozocabby.views.console;
 
 public class AdminMenu extends Console{
 
-    public void display(){
-        clearScreen();
+    private void showAdminMenu(){
         separator('X');
         System.out.println("1: View Accounts");
         System.out.println("2: View Rentals");
@@ -12,6 +11,12 @@ public class AdminMenu extends Console{
         System.out.println("5: Add Place");
         System.out.println("6: View HozoCabby Earnings");
         separator('X');
+    }
+
+    public void display(){
+
+        clearScreen();
+
 
     }
 }

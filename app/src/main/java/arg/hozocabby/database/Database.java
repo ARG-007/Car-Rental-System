@@ -3,7 +3,6 @@ package arg.hozocabby.database;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.*;
 
@@ -26,6 +25,9 @@ public class Database implements AutoCloseable{
     private Connection connection;
     private static final SQLiteConfig CONN_CONFIG = new SQLiteConfig();
 
+    private final AccountDataAccess accountDataAccess;
+    private final VehicleDataAccess vehicleDataAccess;
+
     static {
         try {
             props = Helper.getPropertiesFromResource("config.properties");
@@ -34,22 +36,19 @@ public class Database implements AutoCloseable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
 
-    private static final String LIST_TABLES = "PRAGMA table_list";
-
-    private final AccountDataAccess accountDataAccess;
-    private final VehicleDataAccess vehicleDataAccess;
-
-    static {
         CONN_CONFIG.setJournalMode(SQLiteConfig.JournalMode.WAL);
         CONN_CONFIG.enforceForeignKeys(true);
     }
 
+    private static final String LIST_TABLES = "PRAGMA table_list";
+
+
+
+
     private Database() throws DataSourceException {
 
-        if(Boolean.parseBoolean(props.getProperty("force_replace_db")) ){
-            close();
+        if(Boolean.parseBoolean(props.getProperty("create_db"))){
             createDatabase();
             getConnection();
         }
@@ -95,30 +94,31 @@ public class Database implements AutoCloseable{
 
     private void createDatabase() throws DataSourceException{
 
-        System.out.println("The Path: " + Path.of(dbName).toAbsolutePath());
-
-        try(InputStream is = Helper.getResourceAsStream("Database/template.db");
-        ) {
-            Files.copy(is, Path.of(dbName).toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING);
-            validateDatabase();
-        } catch (IOException e){
-            throw new DataSourceException("Error When Copying File: "+e.getMessage(), e);
+        if(Boolean.parseBoolean(props.getProperty("use_script_execute"))){
+            executeFromSQLScript(Helper.getResourceAsStream(props.getProperty("db_create_script")));
+            executeFromSQLScript(Helper.getResourceAsStream(props.getProperty("db_city_add_script")));
+        } else {
+            try(InputStream is = Helper.getResourceAsStream("Database/template.db");
+            ) {
+                Files.copy(is, Path.of(dbName).toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e){
+                throw new DataSourceException("Error When Copying File: "+e.getMessage(), e);
+            }
         }
 
     }
 
-    private void executeFromSQLScript(String path) throws DataSourceException{
+    private void executeFromSQLScript(InputStream scriptStream) throws DataSourceException{
         try(
                 Statement s = getStatement();
-                InputStream initializerFileStream = getClass().getClassLoader().getResourceAsStream(path);
-                Scanner scriptReader = new Scanner(new InputStreamReader(initializerFileStream))
+                Scanner scriptReader = new Scanner(new InputStreamReader(scriptStream))
         ){
             scriptReader.useDelimiter("(;(\\r)?\\n)|((\\r)?\\n)?(--)?.*(--(\\r)?\\n)");
 
             while(scriptReader.hasNext()) {
                 s.execute(scriptReader.next());
             }
-        } catch (SQLException | IOException ex){
+        } catch (SQLException ex){
             throw new DataSourceException("Execution From Script Exception: "+ex.getMessage(), ex);
         }
     }
@@ -135,14 +135,12 @@ public class Database implements AutoCloseable{
         try(Statement s = getStatement()) {
 
             s.executeQuery(LIST_TABLES);
+
         } catch(SQLException sql) {
             throw new DataSourceException("Cannot Validate Database: "+sql);
         }
-
-
         return true;
     }
-
 
     public void close() throws DataSourceException {
         try {

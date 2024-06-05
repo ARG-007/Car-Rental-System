@@ -14,3 +14,11 @@ dependencies {
 application {
     mainClass = "arg.hozocabby.Main"
 }
+
+tasks.run.configure {
+    standardInput = System.`in`
+}
+
+tasks.run.configure {
+    mainClass = application.mainClass
+}

@@ -29,6 +29,13 @@ CREATE TABLE VehicleType (
 
 INSERT INTO VehicleType (type) VALUES ('HatchBack'), ('Sedan'), ('SUV'), ('MaxiCab');
 
+CREATE TABLE VehicleStatus {
+    id INT PRIMARY KEY AUTOINCREMENT,
+    status TEXT UNIQUE
+}
+
+INSERT INTO VehicleStatus (status) VALUES ('Available'), ('Booked'), ('Retired');
+
 CREATE TABLE Account (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -41,15 +48,17 @@ CREATE TABLE Account (
 
 CREATE TABLE Vehicle (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    seats INTEGER,
-    chargePerKm REAL,
-    owner INTEGER,
-    mileage REAL,
+    seats INTEGER NOT NULL,
+    chargePerKm REAL NOT NULL,
+    owner INTEGER NOT NULL,
+    mileage REAL NOT NULL,
     fuelType INTEGER,
     vehicleType INTEGER,
+    vehicleStatus INTEGER DEFAULT 1,
     FOREIGN KEY (owner) REFERENCES Account(id),
     FOREIGN KEY (fuelType) REFERENCES FuelType(id),
-    FOREIGN KEY (vehicleType) REFERENCES VehicleType(id)
+    FOREIGN KEY (vehicleType) REFERENCES VehicleType(id),
+    FOREIGN KEY (vehicleStatus) REFERENCES VehicleStatus(id)
 );
 
 CREATE TABLE Place (
