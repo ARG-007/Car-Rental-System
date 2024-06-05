@@ -1,4 +1,4 @@
-package arg.hozocabby.database.entities;
+package arg.hozocabby.entities;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
