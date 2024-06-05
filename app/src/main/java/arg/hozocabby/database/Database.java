@@ -4,10 +4,8 @@ import java.io.*;
 import java.sql.*;
 
 import java.util.*;
-import arg.hozocabby.database.entities.Place;
-import arg.hozocabby.database.entities.RentalInfo;
-import arg.hozocabby.database.entities.Account;
-import arg.hozocabby.database.entities.Vehicle;
+
+import arg.hozocabby.exceptions.DataSourceException;
 import org.sqlite.SQLiteConfig;
 
 public class Database implements AutoCloseable{
@@ -23,7 +21,7 @@ public class Database implements AutoCloseable{
         CONN_CONFIG.enforceForeignKeys(true);
     }
 
-    private Database() throws SQLException, IOException{
+    private Database() throws DataSourceException{
         if(!validateDatabase()){
             createDatabase();
         }
@@ -33,41 +31,48 @@ public class Database implements AutoCloseable{
         accountManager = new AccountManager(db);
     }
 
-    Connection getConnection() throws SQLException{
-        if(connection == null || connection.isClosed()){
-            connection = DriverManager.getConnection(CONNECTION_URL, CONN_CONFIG.toProperties());
+    private Connection getConnection() throws DataSourceException{
+        try {
+            if(connection == null || connection.isClosed()){
+                connection = DriverManager.getConnection(CONNECTION_URL, CONN_CONFIG.toProperties());
+            }
+            return connection;
+        } catch (SQLException sql) {
+            throw new DataSourceException("Cannot Create Connection To DB: "+sql.getMessage(), sql);
         }
-        return connection;
     }
 
-    Statement getStatement() throws SQLException {
-        return getConnection().createStatement();
+    Statement getStatement() throws DataSourceException {
+        try {
+            return getConnection().createStatement();
+        } catch(SQLException sqlEx) {
+            throw new DataSourceException("Cannot Create Statement: "+ sqlEx.getMessage(), sqlEx);
+        }
     }
 
 
-    PreparedStatement getPreparedStatement(String statement) throws SQLException{
-        return getConnection().prepareStatement(statement);
+    PreparedStatement getPreparedStatement(String statement) throws DataSourceException{
+        try {
+            return getConnection().prepareStatement(statement);
+        } catch (SQLException ex){
+            throw new DataSourceException("Cannot Create Prepared Statement: "+ex.getMessage(), ex);
+        }
     }
 
-    public static Database getDatabase() throws SQLException, IOException{
+    public static Database getDatabase() throws DataSourceException{
         if(db == null){
             db = new Database();
         }
         return db;
     }
 
-    public Map<Integer, Place> places = new HashMap<>();
-    public Map<Integer, Vehicle> vehicles = new HashMap<>();
-    public Map<String, Account> Accounts = new HashMap<>();
-    public Map<Integer, RentalInfo> rentals = new HashMap<>();
-
-    private void createDatabase() throws SQLException, IOException{
+    private void createDatabase() throws DataSourceException{
 
         executeFromSQLScript("Database/DB_InitializerScript.sql");
         executeFromSQLScript("Database/CityAdderScript.sql");
     }
 
-    private void executeFromSQLScript(String path) throws SQLException, IOException{
+    private void executeFromSQLScript(String path) throws DataSourceException{
         try(
                 Statement s = getStatement();
                 InputStream initializerFileStream = getClass().getClassLoader().getResourceAsStream(path);
@@ -78,12 +83,13 @@ public class Database implements AutoCloseable{
             while(scriptReader.hasNext()) {
                 s.execute(scriptReader.next());
             }
-
+        } catch (SQLException | IOException ex){
+            throw new DataSourceException("Execution From Script Exception: "+ex.getMessage(), ex);
         }
     }
 
     public AccountManager getAccountManager(){
-        return new AccountManager(db);
+        return accountManager;
     }
 
     private boolean validateDatabase() {
@@ -98,8 +104,12 @@ public class Database implements AutoCloseable{
 
     }
 
-    public void close() throws SQLException{
-        connection.close();
+    public void close() throws DataSourceException {
+        try {
+            connection.close();
+        } catch (SQLException sqlEx) {
+            throw new DataSourceException("Exception In Closing Connection: "+sqlEx.getMessage(), sqlEx);
+        }
     }
 
 
