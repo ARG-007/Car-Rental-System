@@ -5,13 +5,13 @@ import java.util.Date;
 import java.util.NoSuchElementException;
 
 public class Rental {
-    private int id;
+    private Integer id;
     private RentalInfo info;
 
     private Account driver;
-    private double distance;
+    private Double distance;
     private Date fareEndTime;
-    private double cost;
+    private Double cost;
     private RentalStatus status;
 
     public Rental(int id, RentalInfo info) {
@@ -52,6 +52,13 @@ public class Rental {
         }
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public RentalInfo getInfo() {
+        return info;
+    }
 
     public Account getDriver() {
         return driver;
@@ -61,7 +68,7 @@ public class Rental {
         this.driver = driver;
     }
 
-    public double getDistance() {
+    public Double getDistance() {
         return distance;
     }
 
@@ -77,7 +84,7 @@ public class Rental {
         this.fareEndTime = fareEndTime;
     }
 
-    public double getCost() {
+    public Double getCost() {
         return cost;
     }
 

@@ -19,12 +19,13 @@ public class Main {
             System.out.println("Database Error - " + e.getMessage());
 
             System.err.println(e.getMessage());
-            System.err.println(Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
         }catch(Exception e) {
             System.out.println("Exception: "+e);
 
             System.err.println(e.getMessage());
-            System.err.println(Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
+
         }
 
 

@@ -6,22 +6,28 @@ import java.util.NoSuchElementException;
 
 public class Vehicle {
 
-    private int id, seats;
-    private double chargePerKm, mileage;
+    private Integer id, seats;
+    private Double chargePerKm, mileage;
     private Account owner;
     private FuelType  fuelType;
-    VehicleType vehicleType;
+    private VehicleType vehicleType;
 
 
     public Vehicle(int id, VehicleType vehicleType, Account owner, int seats, double cpk, double mileage,FuelType fuelType){
+        this(vehicleType, owner, seats, cpk, mileage, fuelType);
         this.id = id;
+    }
+
+    public Vehicle(VehicleType vehicleType, Account owner, int seats, double cpk, double mileage,FuelType fuelType){
         this.vehicleType = vehicleType;
         this.owner = owner;
         this.seats = seats;
         this.chargePerKm = cpk;
         this.mileage = mileage;
         this.fuelType = fuelType;
+        this.id = null;
     }
+
     public int getId() {
         return id;
     }
@@ -49,6 +55,8 @@ public class Vehicle {
     public VehicleType getVehicleType() {
         return vehicleType;
     }
+
+
 
     public enum VehicleType {
         SEDAN(1),

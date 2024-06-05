@@ -84,7 +84,7 @@ CREATE TABLE Info (
 CREATE TABLE Rental (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     info INTEGER UNIQUE NOT NULL,
-    driver INTEGER NOT NULL,
+    driver INTEGER NULL,
     distance REAL,
     fareEndTime DATETIME,
     fareCost REAL,

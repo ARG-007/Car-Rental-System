@@ -1,6 +1,10 @@
 package arg.hozocabby.database;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 
 import java.util.*;
@@ -8,11 +12,31 @@ import java.util.*;
 import arg.hozocabby.exceptions.DataSourceException;
 import org.sqlite.SQLiteConfig;
 
+import arg.hozocabby.Helper;
+
 public class Database implements AutoCloseable{
-    private static final String CONNECTION_URL = "jdbc:sqlite:HozoCabby.db";
+    private static final Properties props;
+
+
+    private static final String dbName;
+    private static final String CONNECTION_URL;
+
     private static Database db;
+
     private Connection connection;
     private static final SQLiteConfig CONN_CONFIG = new SQLiteConfig();
+
+    static {
+        try {
+            props = Helper.getPropertiesFromResource("config.properties");
+            dbName = props.getProperty("db_name");
+            CONNECTION_URL = "jdbc:sqlite:"+dbName;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static final String LIST_TABLES = "PRAGMA table_list";
 
     private final AccountDataAccess accountDataAccess;
     private final VehicleDataAccess vehicleDataAccess;
@@ -22,13 +46,13 @@ public class Database implements AutoCloseable{
         CONN_CONFIG.enforceForeignKeys(true);
     }
 
-    private Database() throws DataSourceException{
-        if(!validateDatabase()){
+    private Database() throws DataSourceException {
+
+        if(Boolean.parseBoolean(props.getProperty("force_replace_db")) ){
+            close();
             createDatabase();
+            getConnection();
         }
-
-        loadDatabase();
-
         accountDataAccess = new AccountDataAccess(this);
         vehicleDataAccess = new VehicleDataAccess(this);
 
@@ -71,8 +95,16 @@ public class Database implements AutoCloseable{
 
     private void createDatabase() throws DataSourceException{
 
-        executeFromSQLScript("Database/DB_InitializerScript.sql");
-        executeFromSQLScript("Database/CityAdderScript.sql");
+        System.out.println("The Path: " + Path.of(dbName).toAbsolutePath());
+
+        try(InputStream is = Helper.getResourceAsStream("Database/template.db");
+        ) {
+            Files.copy(is, Path.of(dbName).toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING);
+            validateDatabase();
+        } catch (IOException e){
+            throw new DataSourceException("Error When Copying File: "+e.getMessage(), e);
+        }
+
     }
 
     private void executeFromSQLScript(String path) throws DataSourceException{
@@ -99,21 +131,24 @@ public class Database implements AutoCloseable{
         return vehicleDataAccess;
     }
 
-    private boolean validateDatabase() {
+    private boolean validateDatabase() throws DataSourceException{
+        try(Statement s = getStatement()) {
+
+            s.executeQuery(LIST_TABLES);
+        } catch(SQLException sql) {
+            throw new DataSourceException("Cannot Validate Database: "+sql);
+        }
 
 
-        return false;
+        return true;
     }
 
-
-    private void loadDatabase(){
-
-
-    }
 
     public void close() throws DataSourceException {
         try {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         } catch (SQLException sqlEx) {
             throw new DataSourceException("Exception In Closing Connection: "+sqlEx.getMessage(), sqlEx);
         }

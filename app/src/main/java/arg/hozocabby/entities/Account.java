@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class Account {
-    private final int id;
+    private final Integer id;
     private final String name, address;
     private final String phone;
     private final UserType type;
@@ -19,7 +19,7 @@ public class Account {
         this.type = type;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -35,7 +35,7 @@ public class Account {
         return phone;
     }
 
-    public boolean verifyPassword(String password){
+    public Boolean verifyPassword(String password){
         return this.password.equals(password);
     }
 

@@ -3,15 +3,24 @@ package arg.hozocabby.entities;
 import java.util.Date;
 
 public class RentalInfo {
-    private int id;
-
+    private Integer id;
     private Account requester;
     private Vehicle assignedVehicle;
     private Vehicle.VehicleType requestedVehicleType;
     private Place pickup, destination;
     private Date pickupTime;
 
-    private double fare;
+    public RentalInfo() { }
+
+    public RentalInfo(Integer id, Account requester, Vehicle assignedVehicle, Vehicle.VehicleType requestedVehicleType, Place pickup, Place destination, Date pickupTime) {
+        this.id = id;
+        this.requester = requester;
+        this.assignedVehicle = assignedVehicle;
+        this.requestedVehicleType = requestedVehicleType;
+        this.pickup = pickup;
+        this.destination = destination;
+        this.pickupTime = pickupTime;
+    }
 
     public Vehicle getAssignedVehicle() {
         return assignedVehicle;

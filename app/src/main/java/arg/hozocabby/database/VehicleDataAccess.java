@@ -8,10 +8,7 @@ import arg.hozocabby.exceptions.DataSourceException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class VehicleDataAccess {
     private final Database db;
@@ -27,6 +24,7 @@ public class VehicleDataAccess {
     private static final String VEHICLE_BY_TYPE = VEHICLE_QUERY + " WHERE type = ?";
     private static final String VEHICLE_BY_ID = VEHICLE_QUERY + " WHERE id = ?";
 
+    private static final String VEHICLE_CREATE = "INSERT INTO Vehicle(seats, chargePerKm, owner, mileage, fuelType, vehicleType) values (?, ?, ?, ?, ?, ?)";
 
     private void saveToInternalReferenceMap(Vehicle v){
         vehicleReferenceMap.put(v.getId(), v);
@@ -99,5 +97,15 @@ public class VehicleDataAccess {
             throw new DataAccessException(sqlEx);
         }
         return Optional.empty();
+    }
+
+    public boolean addVehicle(Vehicle v) throws DataSourceException, DataAccessException{
+        try(PreparedStatement ps = db.getPreparedStatement(VEHICLE_CREATE)) {
+
+        } catch (SQLException sqe) {
+            throw new DataAccessException(sqe);
+        }
+
+        return false;
     }
 }
