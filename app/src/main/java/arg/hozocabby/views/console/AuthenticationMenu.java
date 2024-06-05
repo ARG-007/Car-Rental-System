@@ -1,9 +1,11 @@
 package arg.hozocabby.views.console;
 
-import arg.hozocabby.database.entities.Account;
+import arg.hozocabby.entities.Account;
+import arg.hozocabby.exceptions.DataAccessException;
+import arg.hozocabby.exceptions.DataSourceException;
 import arg.hozocabby.managers.AuthenticationManager;
 
-import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.InputMismatchException;
 import java.util.Optional;
@@ -83,7 +85,7 @@ public class AuthenticationMenu extends Console {
     }
 
 
-    public void display() {
+    public void display() throws DataSourceException{
         boolean exit;
 
         while(true){
@@ -107,9 +109,8 @@ public class AuthenticationMenu extends Console {
                     case 3: break;
                     case 4: return;
                 }
-            } catch(SQLException se){
-                System.out.println("Database Error: "+ se.getMessage());
-                System.exit(1);
+            } finally {
+                separator('.');
             }
 
             if(loggedInAccount.isPresent()){
@@ -128,7 +129,7 @@ public class AuthenticationMenu extends Console {
 
 
 
-    private Optional<Account> userLogin() throws SQLException {
+    private Optional<Account> userLogin() throws DataSourceException {
         clearScreen();
         Account account = null;
 
@@ -163,7 +164,12 @@ public class AuthenticationMenu extends Console {
                 reAttempts--;
                 System.out.printf("You Have %d Re-Attempts Left\n", reAttempts);
 
-            } finally {
+            } catch(DataAccessException dae) {
+                System.err.println(dae);
+
+                System.out.println("Internal Error, Try Again or Exit");
+            }
+            finally {
                 separator('-');
             }
 
@@ -171,7 +177,7 @@ public class AuthenticationMenu extends Console {
         return Optional.ofNullable(account);
     }
 
-    private Optional<Account> userRegister() throws SQLException{
+    private Optional<Account> userRegister() throws DataSourceException{
         clearScreen();
         separator('=');
         Account acc;
@@ -201,6 +207,10 @@ public class AuthenticationMenu extends Console {
                     default:
                         System.out.println("Invalid Input, Redoing Registration, Use Different Mobile Number");
                 }
+            } catch(DataAccessException dae) {
+                System.err.println(dae);
+
+                System.out.println("Internal Error, Try Again or Exit");
             }
             separator('+');
 

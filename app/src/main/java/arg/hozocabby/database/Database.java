@@ -14,7 +14,8 @@ public class Database implements AutoCloseable{
     private Connection connection;
     private static final SQLiteConfig CONN_CONFIG = new SQLiteConfig();
 
-    private final AccountManager accountManager;
+    private final AccountDataAccess accountDataAccess;
+    private final VehicleDataAccess vehicleDataAccess;
 
     static {
         CONN_CONFIG.setJournalMode(SQLiteConfig.JournalMode.WAL);
@@ -28,7 +29,9 @@ public class Database implements AutoCloseable{
 
         loadDatabase();
 
-        accountManager = new AccountManager(db);
+        accountDataAccess = new AccountDataAccess(this);
+        vehicleDataAccess = new VehicleDataAccess(this);
+
     }
 
     private Connection getConnection() throws DataSourceException{
@@ -88,8 +91,12 @@ public class Database implements AutoCloseable{
         }
     }
 
-    public AccountManager getAccountManager(){
-        return accountManager;
+    public AccountDataAccess getAccountDataAccess(){
+        return accountDataAccess;
+    }
+
+    public VehicleDataAccess getVehicleDataAccess(){
+        return vehicleDataAccess;
     }
 
     private boolean validateDatabase() {

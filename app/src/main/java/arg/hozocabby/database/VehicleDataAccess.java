@@ -13,10 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class VehicleManager {
+public class VehicleDataAccess {
     private final Database db;
 
-    VehicleManager(Database db){
+    VehicleDataAccess(Database db){
         this.db = db;
     }
 
@@ -37,7 +37,7 @@ public class VehicleManager {
             return new Vehicle(
                     rs.getInt("id"),
                     Vehicle.VehicleType.valueOf(rs.getInt("vehicleType")),
-                    db.getAccountManager().getAccountByID(rs.getInt("owner")).get(),
+                    db.getAccountDataAccess().getAccountByID(rs.getInt("owner")).get(),
                     rs.getInt("seats"),
                     rs.getDouble("chargePerKm"),
                     rs.getDouble("mileage"),
