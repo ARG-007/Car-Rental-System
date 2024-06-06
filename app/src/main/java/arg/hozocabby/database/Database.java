@@ -27,6 +27,8 @@ public class Database implements AutoCloseable{
 
     private final AccountDataAccess accountDataAccess;
     private final VehicleDataAccess vehicleDataAccess;
+    private final RentalDataAccess rentalDataAccess;
+    private final PlaceDataAccess placeDataAccess;
 
     static {
         try {
@@ -41,20 +43,41 @@ public class Database implements AutoCloseable{
         CONN_CONFIG.enforceForeignKeys(true);
     }
 
-    private static final String LIST_TABLES = "PRAGMA table_list";
-
-
-
-
     private Database() throws DataSourceException {
 
         if(Boolean.parseBoolean(props.getProperty("create_db"))){
             createDatabase();
-            getConnection();
         }
+        getConnection();
+
         accountDataAccess = new AccountDataAccess(this);
         vehicleDataAccess = new VehicleDataAccess(this);
+        placeDataAccess = new PlaceDataAccess(this);
+        rentalDataAccess = new RentalDataAccess(this);
 
+    }
+
+    public static Database getDatabase() throws DataSourceException{
+        if(db == null){
+            db = new Database();
+        }
+        return db;
+    }
+
+    public AccountDataAccess getAccountDataAccess(){
+        return accountDataAccess;
+    }
+
+    public VehicleDataAccess getVehicleDataAccess(){
+        return vehicleDataAccess;
+    }
+
+    public RentalDataAccess getRentalDataAccess() {
+        return rentalDataAccess;
+    }
+
+    public PlaceDataAccess getPlaceDataAccess() {
+        return placeDataAccess;
     }
 
     private Connection getConnection() throws DataSourceException{
@@ -76,20 +99,12 @@ public class Database implements AutoCloseable{
         }
     }
 
-
     PreparedStatement getPreparedStatement(String statement) throws DataSourceException{
         try {
             return getConnection().prepareStatement(statement);
         } catch (SQLException ex){
             throw new DataSourceException("Cannot Create Prepared Statement: "+ex.getMessage(), ex);
         }
-    }
-
-    public static Database getDatabase() throws DataSourceException{
-        if(db == null){
-            db = new Database();
-        }
-        return db;
     }
 
     private void createDatabase() throws DataSourceException{
@@ -123,23 +138,34 @@ public class Database implements AutoCloseable{
         }
     }
 
-    public AccountDataAccess getAccountDataAccess(){
-        return accountDataAccess;
-    }
-
-    public VehicleDataAccess getVehicleDataAccess(){
-        return vehicleDataAccess;
-    }
-
     private boolean validateDatabase() throws DataSourceException{
         try(Statement s = getStatement()) {
 
-            s.executeQuery(LIST_TABLES);
+//            s.executeQuery(LIST_TABLES);
 
         } catch(SQLException sql) {
             throw new DataSourceException("Cannot Validate Database: "+sql);
         }
         return true;
+    }
+
+
+    /**
+     * Returns Last Inserted RowID, for correct outputs
+     * Call This As Soon As an Update Operation Took Place
+     * @return {@code rowId}
+     * @throws DataSourceException Database Error
+     */
+    synchronized int getLastInsertedId() throws DataSourceException{
+        try (Statement s = getStatement()) {
+            ResultSet rs = s.executeQuery("SELECT last_inserted_row() as lir");
+            rs.next();
+            int id = rs.getInt("lir");
+
+            return id;
+        } catch (SQLException sql) {
+            throw new DataSourceException("Exception in Retriving lastRowid: ",sql);
+        }
     }
 
     public void close() throws DataSourceException {
@@ -151,6 +177,8 @@ public class Database implements AutoCloseable{
             throw new DataSourceException("Exception In Closing Connection: "+sqlEx.getMessage(), sqlEx);
         }
     }
+
+
 
 
 }

@@ -10,12 +10,11 @@ import java.util.Optional;
 public class AuthenticationService {
     AccountDataAccess accountMan;
 
-    public AuthenticationService(AccountDataAccess accountMan) {
+    AuthenticationService(AccountDataAccess accountMan) {
         this.accountMan = accountMan;
     }
 
     public Account login(String phone, String password, Account.UserType type) throws IllegalArgumentException, DataSourceException, DataAccessException {
-
 
         Optional<Account> loggedInUser = accountMan.getAccountByMobile(phone);
         if(loggedInUser.isEmpty()) {
@@ -43,6 +42,6 @@ public class AuthenticationService {
             throw new IllegalArgumentException("EMPTY_PASSWORD");
         }
 
-        return accountMan.createAccount(name, phone, address, password, type);
+        return accountMan.addAccount(name, phone, address, password, type);
     }
 }

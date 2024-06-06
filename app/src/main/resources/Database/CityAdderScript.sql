@@ -1,109 +1,62 @@
 INSERT INTO Place(name, lat, long) VALUES
-('Adirampattinam', 10.35, 22.316666666666666),
-('Ambasamudram', 8.716666666666667, 44.28333333333333),
-('Ambur', 21.833333333333332, 51.3),
-('Anaimalai Hills', 10.4, 25.266666666666666),
-('Arakkonam', 13.083333333333334, 6.316666666666666),
-('Arantangi', 10.166666666666666, 11.316666666666666),
-('Arcot', 12.933333333333334, 57.31666666666667),
-('Arni', 12.666666666666666, 41.31666666666667),
-('Aruppukkotai', 9.516666666666667, 32.3),
 ('Attur', 11.6, 37.3),
-('Atur', 10.266666666666667, 17.283333333333335),
 ('Bodinayakkanur', 10.016666666666667, 2.283333333333333),
-('Calimere, Point', 10.3, 19.316666666666666),
-('Carnatic', 12.0, 1.3333333333333333),
+('Chennai', 13.066666666666666, 5.333333333333333),
 ('Chidambaram', 11.4, 25.316666666666666),
 ('Chingleput', 12.7, 43.333333333333336),
 ('Coimbatore', 11.0, 1.2833333333333334),
-('Comorin, C.', 8.066666666666666, 5.283333333333333),
-('Coromandel Coast', 12.0, 1.3333333333333333),
 ('Cuddalore', 11.716666666666667, 44.31666666666667),
 ('Devakottai', 9.95, 58.3),
 ('Dhanushkodi', 9.166666666666666, 11.316666666666666),
-('Dharapuram', 10.75, 46.28333333333333),
 ('Dharmapuri', 12.133333333333333, 9.3),
 ('Dindigul', 10.366666666666667, 23.3),
-('Dodabetta. Mt.', 11.416666666666666, 26.266666666666666),
-('Ennore', 13.233333333333333, 15.333333333333334),
 ('Erode', 11.333333333333334, 21.283333333333335),
-('Fort St David', 11.75, 46.31666666666667),
-('Fort St George', 13.066666666666666, 5.333333333333333),
-('Gudiyatam', 12.95, 58.3),
-('Hospur', 12.733333333333333, 45.28333333333333),
-('Jalarpet', 12.566666666666666, 35.3),
-('Javadi hills', 12.666666666666666, 41.3),
 ('Kanchipuram', 12.833333333333334, 51.31666666666667),
 ('Karur', 10.966666666666667, 59.3),
-('Kaveri R.', 11.333333333333334, 21.283333333333335),
-('Kayalpatnam', 8.566666666666666, 35.3),
-('Kilakarai', 9.233333333333333, 15.3),
 ('Kodaikanal', 10.216666666666667, 14.283333333333333),
 ('Krishnagiri', 12.533333333333333, 33.3),
 ('Kumbakonam', 10.966666666666667, 59.31666666666667),
-('Madras (Chennai)', 13.066666666666666, 5.333333333333333),
 ('Madurai', 9.966666666666667, 59.3),
-('Madurantakam', 12.5, 31.316666666666666),
-('Mahabalipuram', 12.616666666666667, 38.333333333333336),
-('Mannargudi', 10.666666666666666, 41.31666666666667),
-('Mayuram', 11.1, 7.316666666666666),
-('Mettupalaiyam', 11.3, 19.266666666666666),
-('Mettur Dam', 11.866666666666667, 53.28333333333333),
-('Nagarjunasagar Dam', 16.833333333333332, 51.31666666666667),
 ('Nagercoil', 8.183333333333334, 12.283333333333333),
 ('Namakkal', 11.216666666666667, 14.3),
-('Nanguneri', 8.483333333333333, 30.283333333333335),
-('Neiveli', 10.516666666666667, 32.31666666666667),
-('Pachaimalai Hills', 11.25, 16.3),
-('Padmanabhapuram', 9.1, 7.266666666666667),
-('Palayankottal', 8.716666666666667, 44.28333333333333),
-('Palladam', 10.983333333333333, 60.28333333333333),
-('Pallavaram', 12.966666666666667, 59.333333333333336),
-('Pallivasal', 9.916666666666666, 56.28333333333333),
-('Palni Hills', 10.0, 1.2833333333333334),
-('Panruti', 11.783333333333333, 48.31666666666667),
-('Paramakkudi', 9.516666666666667, 32.3),
-('Pattukkottal', 10.433333333333334, 27.316666666666666),
 ('Perambalur', 11.233333333333333, 15.3),
-('Periyakulam', 10.116666666666667, 8.283333333333333),
 ('Pollachi', 10.65, 40.28333333333333),
 ('Ponneri', 13.033333333333333, 3.333333333333333),
-('Porto Novo', 11.05, 4.316666666666666),
-('Pudukkottal', 10.383333333333333, 24.3),
-('Pulicat, L.', 13.416666666666666, 26.333333333333332),
-('Rajapalayam', 9.45, 28.283333333333335),
-('Ramanathapuram', 9.366666666666667, 23.3),
-('Rameswaram', 9.283333333333333, 18.316666666666666),
 ('Salem', 11.65, 40.3),
-('Sankaranayinarkovil', 9.016666666666667, 2.283333333333333),
-('Sattur', 9.35, 22.283333333333335),
-('Satyamangalam', 11.05, 4.283333333333333),
-('Seven Pagodas', 12.616666666666667, 38.333333333333336),
-('shencottah', 8.983333333333333, 60.28333333333333),
 ('Tenkasi', 8.966666666666667, 59.28333333333333),
-('Thanjavur (Tanjore)', 10.783333333333333, 48.31666666666667),
-('Tindivanam', 12.233333333333333, 15.316666666666666),
 ('Tiruchchirappalli', 10.833333333333334, 51.3),
-('Tiruchendur', 8.5, 31.3),
-('Tiruchengodu', 11.383333333333333, 24.283333333333335),
-('Tirukkoyilur', 11.966666666666667, 59.31666666666667),
-('Tirumangalam', 9.816666666666666, 50.31666666666667),
-('Tirunelveli', 8.733333333333333, 45.28333333333333),
-('Tiruppur', 11.083333333333334, 6.283333333333333),
-('Tiruvallur', 13.15, 10.316666666666666),
-('Tiruvannamalai', 12.25, 16.316666666666666),
-('Tondi', 9.75, 46.31666666666667),
-('Tranquebar', 11.016666666666667, 2.3166666666666664),
-('Turaiyur', 11.15, 10.3),
-('Tuticorin', 8.8, 49.3),
-('Udagamandalam', 11.4, 25.266666666666666),
-('Udamalpet', 10.6, 37.28333333333333),
-('Udiyarpalaiyam', 11.183333333333334, 12.316666666666666),
-('Uttangarai', 12.266666666666667, 17.3),
-('Vaniyambadi', 12.683333333333334, 42.3),
-('Vellore', 12.916666666666666, 56.31666666666667),
-('Villupuram', 11.95, 58.31666666666667),
-('Virudhunagar', 9.583333333333334, 36.28333333333333),
-('Vriddhachalam', 11.533333333333333, 33.31666666666667),
-('Wandiwash', 12.5, 31.316666666666666),
 ('Yercaud', 11.8, 49.3);
+
+INSERT INTO Account(name, mobile, address, password, userType_id) VALUES
+('Deepesh Kumarsamy', '9876543210', 'Vada malai, Nagar', 'D12K', 1),
+('Balaji Shakthi Seelan', '8765432109', 'Singam Vayil, Kotai', 'BalaShakthi', 1),
+('Gokul MP', '7654321098', 'Vengadam Seeran, Kuruthirai', 'Kuruthirai789', 1),
+('Yaman Sivamani', '4567890123', 'Underground', 'Yaman', 2),
+('Shanmugam Govindasamy', '5678901234', 'Emerald Drive, Complex', 'Complex567', 2),
+('Avatar Dhanuush', '9012345678', 'Pandora', 'Pandora', 3),
+('Yama Kanthan', '0123456789', 'Underworld', 'Ender69', 3),
+('ARG', '3210987654', 'Mars Earth Control', 'Control321', 4);
+
+-- Sedans
+INSERT INTO Vehicle (name, seats, chargePerKm, owner_id, mileage, fuelType_id, vehicleType_id) VALUES
+('Toyota Camry', 5, 9.5, 4, 14.5, 1, 1), -- Owner: Yaman Sivamani
+('Honda Accord', 5, 8.8, 5, 16.2, 1, 1), -- Owner: Shanmugam Govindasamy
+('Nissan Altima', 5, 8.2, 4, 15.8, 1, 1), -- Owner: Yaman Sivamani
+('Chevrolet Malibu', 5, 9.1, 5, 17.4, 1, 1), -- Owner: Shanmugam Govindasamy
+
+-- SUVs
+INSERT INTO Vehicle (name, seats, chargePerKm, owner_id, mileage, fuelType_id, vehicleType_id) VALUES
+('Toyota Fortuner', 7, 11.5, 4, 13.2, 1, 2), -- Owner: Yaman Sivamani
+('Ford Explorer', 7, 12.3, 5, 15.9, 1, 2), -- Owner: Shanmugam Govindasamy
+('Honda CR-V', 7, 10.8, 4, 14.7, 1, 2), -- Owner: Yaman Sivamani
+('Chevrolet Suburban', 7, 13.6, 5, 12.9, 1, 2), -- Owner: Shanmugam Govindasamy
+
+-- Hatchbacks
+INSERT INTO Vehicle (name, seats, chargePerKm, owner_id, mileage, fuelType_id, vehicleType_id) VALUES
+('Hyundai i10', 5, 6.2, 4, 20.5, 2, 3), -- Owner: Yaman Sivamani
+('Maruti Suzuki Alto', 5, 5.8, 5, 22.1, 2, 3), -- Owner: Shanmugam Govindasamy
+('Volkswagen Polo', 5, 6.0, 4, 21.3, 2, 3), -- Owner: Yaman Sivamani
+('Ford Fiesta', 5, 6.5, 5, 20.7, 2, 3); -- Owner: Shanmugam Govindasamy
+
+
+

@@ -1,7 +1,7 @@
 package arg.hozocabby.entities;
 
 import java.util.Arrays;
-import java.util.Date;
+import java.sql.Date;
 import java.util.NoSuchElementException;
 
 public class Rental {
@@ -12,11 +12,24 @@ public class Rental {
     private Double distance;
     private Date fareEndTime;
     private Double cost;
-    private RentalStatus status;
+    private RentalStatus status = RentalStatus.PENDING;
 
-    public Rental(int id, RentalInfo info) {
+    public Rental(RentalInfo info) {
         this.id = id;
         this.info = info;
+
+        this.distance = info.getPickup().distanceBetween(info.getDestination());
+        this.cost = info.getAssignedVehicle().getChargePerKm()*this.distance;
+    }
+
+    public Rental(Integer id, RentalInfo info, Account driver, Double distance, Date fareEndTime, Double cost, RentalStatus status) {
+        this.id = id;
+        this.info = info;
+        this.driver = driver;
+        this.distance = distance;
+        this.fareEndTime = fareEndTime;
+        this.cost = cost;
+        this.status = status;
     }
 
     public enum RentalStatus {

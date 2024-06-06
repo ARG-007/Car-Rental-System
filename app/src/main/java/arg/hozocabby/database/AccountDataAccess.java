@@ -15,10 +15,11 @@ import java.util.Optional;
 public class AccountDataAccess {
     private final Database db;
 
-    private final static String ACCOUNT_CREATE = "INSERT INTO Account(name, mobile, address, password, userType) VALUES (?, ?, ?, ?, ?)";
+    private final static String ACCOUNT_CREATE = "INSERT INTO Account(name, mobile, address, password, userType_id) VALUES (?, ?, ?, ?, ?)";
     private final static String ACCOUNT_QUERY = "SELECT * FROM Account ";
     private final static String ACCOUNT_QUERY_BY_MOBILE = ACCOUNT_QUERY+" WHERE mobile = ?";
-    private final static String ACCOUNT_QUERY_BY_ID = ACCOUNT_QUERY+" WHERE id = ?";
+    private final static String ACCOUNT_QUERY_BY_ID = ACCOUNT_QUERY+" WHERE account_id = ?";
+    private final static String ACCOUNT_QUERY_BY_TYPE = ACCOUNT_QUERY + "WHERE userType_id = ?";
 
     private final HashMap<Integer, Account> accountReferenceMap = new HashMap<>();
 
@@ -34,12 +35,12 @@ public class AccountDataAccess {
 
         try {
             return new Account(
-                    rs.getInt("id"),
+                    rs.getInt("account_id"),
                     rs.getString("name"),
                     rs.getString("address"),
                     rs.getString("mobile"),
                     rs.getString("password"),
-                    Account.UserType.valueOf(rs.getInt("userType"))
+                    Account.UserType.valueOf(rs.getInt("userType_id"))
             );
         } catch (SQLException ex) {
             throw new DataAccessException(ex);
@@ -58,7 +59,7 @@ public class AccountDataAccess {
         }
     }
 
-    public Account createAccount(String name, String phone, String address, String password, Account.UserType type) throws DataAccessException, DataSourceException {
+    public Account addAccount(String name, String phone, String address, String password, Account.UserType type) throws DataAccessException, DataSourceException {
 
         try(PreparedStatement statement = db.getPreparedStatement(ACCOUNT_CREATE)){
             statement.setString(1, name);
@@ -69,11 +70,7 @@ public class AccountDataAccess {
 
             statement.execute();
 
-            ResultSet rs = statement.executeQuery("SELECT last_insert_id()");
-            rs.next();
-            int id = rs.getInt(1);
-
-            Account acc = new Account(id, name, address, phone, password, type);
+            Account acc = new Account(db.getLastInsertedId(), name, address, phone, password, type);
 
             saveToInternalReferenceMap(acc);
 

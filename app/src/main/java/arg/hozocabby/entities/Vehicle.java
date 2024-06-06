@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 public class Vehicle {
 
     private Integer id = -1, seats;
+    private String name;
     private Double chargePerKm, mileage;
     private Account owner;
     private FuelType  fuelType;
@@ -105,7 +106,7 @@ public class Vehicle {
     }
 
 
-    public Vehicle(VehicleType vehicleType, Account owner, int seats, double cpk, double mileage,FuelType fuelType){
+    public Vehicle(String name, VehicleType vehicleType, Account owner, int seats, double cpk, double mileage,FuelType fuelType){
         this.vehicleType = vehicleType;
         this.owner = owner;
         this.seats = seats;
@@ -114,18 +115,22 @@ public class Vehicle {
         this.fuelType = fuelType;
     }
 
-    public Vehicle(int id, VehicleType vehicleType, Account owner, int seats, double cpk, double mileage,FuelType fuelType){
-        this(vehicleType, owner, seats, cpk, mileage, fuelType);
+    public Vehicle(int id, String name, VehicleType vehicleType, Account owner, int seats, double cpk, double mileage,FuelType fuelType){
+        this(name,vehicleType, owner, seats, cpk, mileage, fuelType);
         this.id = id;
     }
 
-    public Vehicle(Integer id, Integer seats, Double chargePerKm, Double mileage, Account owner, FuelType fuelType, VehicleType vehicleType, VehicleStatus status) {
-        this(id, vehicleType, owner, seats, chargePerKm, mileage, fuelType);
+    public Vehicle(int id, String name, VehicleType vehicleType, Account owner, int seats, double cpk, double mileage,FuelType fuelType, VehicleStatus status) {
+        this(id, name, vehicleType, owner, seats, cpk, mileage, fuelType);
         this.status = status;
     }
 
     public int getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public int getSeats() {

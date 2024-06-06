@@ -17,14 +17,14 @@ public class VehicleDataAccess {
 
     private static final String VEHICLE_QUERY = "SELECT * FROM Vehicle";
 
-    private static final String VEHICLE_BY_OWNER = VEHICLE_QUERY + " WHERE owner = ?";
-    private static final String VEHICLE_BY_TYPE = VEHICLE_QUERY + " WHERE type = ?";
-    private static final String VEHICLE_BY_ID = VEHICLE_QUERY + " WHERE id = ?";
-    private static final String VEHICLE_BY_STATUS = VEHICLE_QUERY + " WHERE status = ?";
-    private static final String VEHICLE_BY_TYPE_WITH_STATUS = VEHICLE_QUERY + " WHERE type = ? and status = ?";
-    private static final String VEHICLE_CREATE = "INSERT INTO Vehicle(seats, chargePerKm, owner, mileage, fuelType, vehicleType) values (?, ?, ?, ?, ?, ?)";
+    private static final String VEHICLE_BY_OWNER = VEHICLE_QUERY + " WHERE owner_id = ?";
+    private static final String VEHICLE_BY_TYPE = VEHICLE_QUERY + " WHERE vehicleType_id = ?";
+    private static final String VEHICLE_BY_ID = VEHICLE_QUERY + " WHERE account_id = ?";
+    private static final String VEHICLE_BY_STATUS = VEHICLE_QUERY + " WHERE vehicleStatus_id = ?";
+    private static final String VEHICLE_BY_TYPE_WITH_STATUS = VEHICLE_QUERY + " WHERE vehicleType_id = ? and vehicleStatus_id = ?";
+    private static final String VEHICLE_CREATE = "INSERT INTO Vehicle(seats, name, chargePerKm, owner_id, mileage, fuelType_id, vehicleType_id) values (?, ?, ?, ?, ?, ?, ?)";
 
-    private static final String VEHICLE_UPDATE_STATUS = "UPDATE Vehicle SET status = ? WHERE id = ?";
+    private static final String VEHICLE_UPDATE_STATUS = "UPDATE Vehicle SET status_id = ? WHERE vehicle_id = ?";
 
     VehicleDataAccess(Database db){
         this.db = db;
@@ -37,13 +37,15 @@ public class VehicleDataAccess {
     private Vehicle createVehicleFromResultSet(ResultSet rs)  throws DataSourceException, DataAccessException{
         try {
             return new Vehicle(
-                    rs.getInt("id"),
-                    Vehicle.VehicleType.valueOf(rs.getInt("vehicleType")),
-                    db.getAccountDataAccess().getAccountByID(rs.getInt("owner")).get(),
+                    rs.getInt("vehicle_id"),
+                    rs.getString("name"),
+                    Vehicle.VehicleType.valueOf(rs.getInt("vehicleType_id")),
+                    db.getAccountDataAccess().getAccountByID(rs.getInt("owner_id")).get(),
                     rs.getInt("seats"),
                     rs.getDouble("chargePerKm"),
                     rs.getDouble("mileage"),
-                    Vehicle.FuelType.valueOf(rs.getInt("fuelType"))
+                    Vehicle.FuelType.valueOf(rs.getInt("fuelType_id")),
+                    Vehicle.VehicleStatus.valueOf(rs.getInt("vehicleStatus_id"))
             );
         } catch (SQLException sqlEx) {
             throw new DataAccessException("TABLE_FIELD_MISMATCH", sqlEx);
@@ -121,11 +123,7 @@ public class VehicleDataAccess {
 
             ps.executeUpdate();
 
-            ResultSet rs = ps.executeQuery("SELECT last_inserted_row() as lir");
-            rs.next();
-            int id = rs.getInt("lir");
-
-            Vehicle newV = new Vehicle(id, v.getVehicleType(), v.getOwner(), v.getSeats(), v.getChargePerKm(), v.getMileage(), v.getFuelType());
+            Vehicle newV = new Vehicle(db.getLastInsertedId(), v.getName(), v.getVehicleType(), v.getOwner(), v.getSeats(), v.getChargePerKm(), v.getMileage(), v.getFuelType());
             saveToInternalReferenceMap(newV);
 
             return newV;

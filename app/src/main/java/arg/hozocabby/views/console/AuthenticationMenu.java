@@ -4,6 +4,7 @@ import arg.hozocabby.entities.Account;
 import arg.hozocabby.exceptions.DataAccessException;
 import arg.hozocabby.exceptions.DataSourceException;
 import arg.hozocabby.service.AuthenticationService;
+import arg.hozocabby.service.ServiceRepository;
 
 import java.util.NoSuchElementException;
 import java.util.InputMismatchException;
@@ -11,76 +12,30 @@ import java.util.Optional;
 
 public class AuthenticationMenu extends Console {
     private static final int EXIT_NUM = Account.UserType.size()+1;
-    private Account.UserType selectedUserType;
+    private Account.UserType selectedRole;
     private final AuthenticationService authService;
+    private final ServiceRepository serviceRepository;
 
-    public AuthenticationMenu(AuthenticationService authService){
-        this.authService = authService;
-    }
+    private final Menu roleSelectionMenu = new Menu(), authenticationSelectionMenu = new Menu();
 
-    private boolean userSelectionMenu(){
+    public AuthenticationMenu(ServiceRepository serviceRepository){
+        this.serviceRepository = serviceRepository;
+        this.authService = serviceRepository.getAuthenticationService();
 
-        int userType;
-        separator('=');
-        System.out.println("User Selection");
-        separator('-');
-        for (Account.UserType type : Account.UserType.values()){
-            System.out.printf("\t%d: %s\n", type.getOrdinal(), type);
-        }
-        System.out.printf("\t%d: Exit\n", EXIT_NUM);
-        separator('=');
+        roleSelectionMenu
+            .setOuterSeparator('=')
+            .setInnerSeparator('-')
+            .setTitle("User Selection")
+            .addOption(Account.UserType.values())
+            .addOption("Exit")
+            .setPrompt("Enter Your Choice: ");
 
+        authenticationSelectionMenu
+            .setOuterSeparator('@')
+            .setInnerSeparator('-')
+            .addOption("Login", "Register", "Back", "Exit")
+            .setPrompt("Select Authentication Mode: ");
 
-        while(true){
-            try {
-                userType = integerInput("Enter Your Choice: ");
-                separator('-');
-
-                if(userType == EXIT_NUM)
-                    return true;
-
-                selectedUserType = Account.UserType.valueOf(userType);
-
-                break;
-            } catch (InputMismatchException | NumberFormatException e) {
-                System.out.println("Enter only the Number");
-            } catch (NoSuchElementException e) {
-                System.out.println("Give Only Displayed Options");
-            } finally {
-                separator('-');
-            }
-        }
-
-        return false;
-    }
-
-    private int authenticationSelectionMenu(){
-
-        int authenticationMode;
-        separator('@');
-        System.out.printf("Selected User Type: %s\n", selectedUserType);
-        separator('-');
-        System.out.println("1: Login\n2: Register\n3: Back\n4: Exit");
-        separator('@');
-        while(true){
-            try {
-                authenticationMode = integerInput("Select Authentication Mode: ");
-
-                if(authenticationMode < 1 || authenticationMode>4)
-                    throw new IllegalArgumentException("Input is not an valid option");
-
-                break;
-            } catch(InputMismatchException | NumberFormatException e) {
-                System.out.println("Non-Integer Input Entered");
-            } catch(IllegalArgumentException e){
-                System.out.println(e.getMessage());
-            } finally {
-                separator('.');
-            }
-
-        }
-
-        return authenticationMode;
     }
 
 
@@ -89,14 +44,22 @@ public class AuthenticationMenu extends Console {
 
         while(true){
             clearScreen();
-            exit = userSelectionMenu();
+//            exit = userSelectionMenu();
+            int menuOutput = roleSelectionMenu.process();
             clearScreen();
 
-            if(exit)
+            if(menuOutput == 5)
                 return;
+//            if(exit) {
+//                return;
+//            }
+
+            selectedRole = Account.UserType.valueOf(menuOutput);
 
             clearScreen();
-            int authenMode = authenticationSelectionMenu();
+//            int authenMode = authenticationSelectionMenu();
+            authenticationSelectionMenu.setTitle("Selected User Type: " + selectedRole);
+            int authenMode = authenticationSelectionMenu.process();
             clearScreen();
 
             Optional<Account> loggedInAccount = Optional.empty();
@@ -109,13 +72,13 @@ public class AuthenticationMenu extends Console {
                     case 4: return;
                 }
             } finally {
-                separator('.');
+//                separator('.');
             }
 
             if(loggedInAccount.isPresent()){
                 switch(loggedInAccount.get().getType()){
                     case ADMIN -> new AdminMenu().display();
-                    case CUSTOMER -> new CustomerMenu(loggedInAccount.get()).display();
+                    case CUSTOMER -> new CustomerMenu(loggedInAccount.get(), serviceRepository.getCustomerService()).display();
                     case OWNER -> new OwnerMenu().display();
                     case DRIVER -> new DriverMenu().display();
                 }
@@ -134,7 +97,7 @@ public class AuthenticationMenu extends Console {
 
         int reAttempts = 3;
         separator('+');
-        System.out.printf("User Mode : %s\nAuthentication Mode: Login\n", selectedUserType);
+        System.out.printf("User Mode : %s\nAuthentication Mode: Login\n", selectedRole);
         separator('-');
 
         attemptLoop:
@@ -144,7 +107,7 @@ public class AuthenticationMenu extends Console {
             separator('.');
 
             try {
-                account = authService.login(mobile, password, selectedUserType);
+                account = authService.login(mobile, password, selectedRole);
                 break;
             } catch (IllegalArgumentException e){
                 switch(e.getMessage()){
@@ -180,7 +143,7 @@ public class AuthenticationMenu extends Console {
         clearScreen();
         separator('=');
         Account acc;
-        System.out.printf("Selected User Type: %s\t Authentication Mode: Registration\n", selectedUserType);
+        System.out.printf("Selected User Type: %s\t Authentication Mode: Registration\n", selectedRole);
 
         separator('+');
         while(true) {
@@ -191,7 +154,7 @@ public class AuthenticationMenu extends Console {
             String password = input("Enter An Password: ");
 
             try {
-                acc = authService.register(name, phone, address, selectedUserType, password);
+                acc = authService.register(name, phone, address, selectedRole, password);
                 break;
             } catch (IllegalArgumentException iea){
                 switch(input("An Account for that Mobile Number already Exists, Login Instead [Y/n] ?: ")){
@@ -213,5 +176,72 @@ public class AuthenticationMenu extends Console {
 
         }
         return Optional.ofNullable(acc);
+    }
+
+    @Deprecated
+    private boolean userSelectionMenu(){
+
+        int userType;
+        separator('=');
+        System.out.println("User Selection");
+        separator('-');
+        for (Account.UserType type : Account.UserType.values()){
+            System.out.printf("\t%d: %s\n", type.getOrdinal(), type);
+        }
+        System.out.printf("\t%d: Exit\n", EXIT_NUM);
+        separator('=');
+
+
+        while(true){
+            try {
+                userType = integerInput("Enter Your Choice: ");
+                separator('-');
+
+                if(userType == EXIT_NUM)
+                    return true;
+
+                selectedRole = Account.UserType.valueOf(userType);
+
+                break;
+            } catch (InputMismatchException | NumberFormatException e) {
+                System.out.println("Enter only the Number");
+            } catch (NoSuchElementException e) {
+                System.out.println("Give Only Displayed Options");
+            } finally {
+                separator('-');
+            }
+        }
+
+        return false;
+    }
+
+    @Deprecated
+    private int authenticationSelectionMenu(){
+
+        int authenticationMode;
+        separator('@');
+        System.out.printf("Selected User Type: %s\n", selectedRole);
+        separator('-');
+        System.out.println("1: Login\n2: Register\n3: Back\n4: Exit");
+        separator('@');
+        while(true){
+            try {
+                authenticationMode = integerInput("Select Authentication Mode: ");
+
+                if(authenticationMode < 1 || authenticationMode>4)
+                    throw new IllegalArgumentException("Input is not an valid option");
+
+                break;
+            } catch(InputMismatchException | NumberFormatException e) {
+                System.out.println("Non-Integer Input Entered");
+            } catch(IllegalArgumentException e){
+                System.out.println(e.getMessage());
+            } finally {
+                separator('.');
+            }
+
+        }
+
+        return authenticationMode;
     }
 }

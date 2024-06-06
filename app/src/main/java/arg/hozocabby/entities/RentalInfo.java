@@ -1,6 +1,6 @@
 package arg.hozocabby.entities;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class RentalInfo {
     private Integer id;
@@ -20,6 +20,14 @@ public class RentalInfo {
         this.pickup = pickup;
         this.destination = destination;
         this.pickupTime = pickupTime;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public Account getRequester() {
+        return requester;
     }
 
     public Vehicle getAssignedVehicle() {

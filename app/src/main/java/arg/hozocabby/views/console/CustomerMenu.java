@@ -2,40 +2,55 @@ package arg.hozocabby.views.console;
 
 import arg.hozocabby.entities.RentalInfo;
 import arg.hozocabby.entities.Account;
+import arg.hozocabby.service.CustomerService;
 
 public class CustomerMenu extends Console{
-    private Account customer;
+    private final Account customer;
 
-    private RentalInfo rental = new RentalInfo();
+    private CustomerService cs;
 
-    public CustomerMenu(Account cus){
+    private final RentalInfo rental = new RentalInfo();
+
+    private final Menu customerActionsMenu = new Menu();
+    private final Menu rentalMenu = new Menu();
+
+    public CustomerMenu(Account cus, CustomerService cs){
         this.customer = cus;
-    }
 
-    public void showMenu(){
-        separator('~');
-        System.out.println("1: Rent");
-        System.out.println("2: View Rentals");
-        System.out.println("3: Pay for Rent");
-        System.out.println("4: Show Menu");
-        System.out.println("5: Exit");
-        separator('~');
+        customerActionsMenu
+            .setOuterSeparator('~')
+            .setInnerSeparator('_')
+            .setTitle(
+                String.format(
+                    "Role: Customer\tLogged In As: %s\tID: %d\n\tChoose Action To Proceed",
+                    customer.getName(), customer.getId()
+                )
+            )
+            .addOption("Rent", "View Rentals", "Cancel Rental", "Show Menu", "Exit")
+            .setPrompt("Enter Your Choice: ");
+
+        rentalMenu
+            .setOuterSeparator('@')
+            .setInnerSeparator('─')
+            .setTitle("Rental Menu, Set/Change Fields")
+            .addOption("Set Pickup", "Set Destination", "Set Car Type", "Set Pickup Time")
+            .addOption("Calculate Fare", "Confirm", "Exit")
+            .setPrompt("Enter Your Choice: ");
+
     }
 
 
     public void display() {
         int choice;
-        showMenu();
+
         while(true){
-            choice = integerInput("Enter You Choice [4 to Show Menu] : ");
-            separator('-');
+            choice = customerActionsMenu.process();
             switch(choice){
                 case 1: rentMenu(); break;
-                case 2: break;
-                case 3: break;
-                case 4: showMenu(); break;
+                case 2: rentalHistory(); break;
+                case 3: cancelRental();break;
+                case 4: break;
                 case 5: return;
-                default: break;
             }
         }
     }
@@ -47,30 +62,24 @@ public class CustomerMenu extends Console{
         int choice;
 
         do {
-            separator('@');
-            System.out.println("\t1: Change Pickup");
-            System.out.println("\t2: Change Rental Type");
-            System.out.println("\t3: Change Destination");
-            System.out.println("\t4: Change Car Type");
-            System.out.println("\t5: Calculate Fare");
-            System.out.println("\t6: Confirm");
-            System.out.println("\t7: Exit");
-            separator('@');
-
-            choice = integerInput("Enter Your Choice: ");
+            choice = rentalMenu.process();
             separator('-');
 
             switch(choice) {
-                case 1: break;
-                case 2: break;
-                case 3: break;
-                case 4: break;
-                case 5: break;
-                case 6: break;
-
-                case 7: break;
-                default:
-                    System.out.println("Enter an Correct Choice!");
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    return;
             }
 
         } while(choice != 7);
@@ -78,19 +87,14 @@ public class CustomerMenu extends Console{
 
     }
 
-    boolean validateInput(){
-
-
-        return false;
-    }
-
-    void setPickup(){
+    void rentalHistory(){
 
     }
 
-    void setRentalType(){
+    void cancelRental(){
 
     }
+
 
 
 }

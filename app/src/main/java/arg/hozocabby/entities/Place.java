@@ -12,4 +12,8 @@ public record Place(Integer id, String name, Double latitude, Double longitude) 
                 + Math.pow(b.longitude() - this.longitude, 2)
             );
     }
+
+    public String toString(){
+        return name;
+    }
 }
