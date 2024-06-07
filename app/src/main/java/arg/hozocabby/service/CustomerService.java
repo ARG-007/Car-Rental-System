@@ -39,8 +39,20 @@ public class CustomerService {
 //
 //    }
 
-    public void bookRent(RentalInfo info){
+    public void bookRent(RentalInfo info) throws DataSourceException{
+        Rental rent = new Rental(info);
 
+
+        try {
+//            List<Rental> previousRentals = db.getRentalDataAccess().getRentalOfCustomer(info.getRequester().getId());
+
+            db.getRentalDataAccess().addRental(rent);
+            db.getVehicleDataAccess().updateVehicleStatus(info.getAssignedVehicle().getId(), Vehicle.VehicleStatus.BOOKED);
+
+
+        } catch (DataAccessException dae) {
+            System.err.println(dae.getMessage());
+        }
     }
 
     public boolean cancelRent(int rentId) throws DataSourceException{

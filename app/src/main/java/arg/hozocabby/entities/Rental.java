@@ -1,5 +1,6 @@
 package arg.hozocabby.entities;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.sql.Date;
 import java.util.NoSuchElementException;
@@ -10,19 +11,18 @@ public class Rental {
 
     private Account driver;
     private Double distance;
-    private Date fareEndTime;
+    private Timestamp fareEndTime;
     private Double cost;
     private RentalStatus status = RentalStatus.PENDING;
 
     public Rental(RentalInfo info) {
-        this.id = id;
         this.info = info;
 
         this.distance = info.getPickup().distanceBetween(info.getDestination());
         this.cost = info.getAssignedVehicle().getChargePerKm()*this.distance;
     }
 
-    public Rental(Integer id, RentalInfo info, Account driver, Double distance, Date fareEndTime, Double cost, RentalStatus status) {
+    public Rental(Integer id, RentalInfo info, Account driver, Double distance, Timestamp fareEndTime, Double cost, RentalStatus status) {
         this.id = id;
         this.info = info;
         this.driver = driver;
@@ -57,7 +57,7 @@ public class Rental {
 
 
         public static RentalStatus valueOf(int ordinal) throws NoSuchElementException {
-            return Arrays.stream(values).findFirst().filter(e -> e.getOrdinal()==ordinal).orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
+            return Arrays.stream(values).filter(e -> e.getOrdinal()==ordinal).findFirst().orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
         }
 
         public static int size(){
@@ -89,11 +89,11 @@ public class Rental {
         this.distance = distance;
     }
 
-    public Date getFareEndTime() {
+    public Timestamp getFareEndTime() {
         return fareEndTime;
     }
 
-    public void setFareEndTime(Date fareEndTime) {
+    public void setFareEndTime(Timestamp fareEndTime) {
         this.fareEndTime = fareEndTime;
     }
 

@@ -37,7 +37,7 @@ public class Vehicle {
 
 
         public static VehicleType valueOf(int ordinal) throws NoSuchElementException {
-            return Arrays.stream(values).findFirst().filter(e -> e.getOrdinal()==ordinal).orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
+            return Arrays.stream(values).filter(e -> e.getOrdinal()==ordinal).findFirst().orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
         }
 
         public static int size(){
@@ -67,7 +67,7 @@ public class Vehicle {
 
 
         public static FuelType valueOf(int ordinal) throws NoSuchElementException {
-            return Arrays.stream(values).findFirst().filter(e -> e.getOrdinal()==ordinal).orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
+            return Arrays.stream(values).filter(e -> e.getOrdinal()==ordinal).findFirst().orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
         }
 
         public static int size(){
@@ -97,7 +97,7 @@ public class Vehicle {
 
 
         public static VehicleStatus valueOf(int ordinal) throws NoSuchElementException {
-            return Arrays.stream(values).findFirst().filter(e -> e.getOrdinal()==ordinal).orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
+            return Arrays.stream(values).filter(e -> e.getOrdinal()==ordinal).findFirst().orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
         }
 
         public static int size(){
@@ -107,6 +107,7 @@ public class Vehicle {
 
 
     public Vehicle(String name, VehicleType vehicleType, Account owner, int seats, double cpk, double mileage,FuelType fuelType){
+        this.name = name;
         this.vehicleType = vehicleType;
         this.owner = owner;
         this.seats = seats;
@@ -125,7 +126,7 @@ public class Vehicle {
         this.status = status;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -133,15 +134,15 @@ public class Vehicle {
         return name;
     }
 
-    public int getSeats() {
+    public Integer getSeats() {
         return seats;
     }
 
-    public double getChargePerKm() {
+    public Double getChargePerKm() {
         return chargePerKm;
     }
 
-    public double getMileage() {
+    public Double getMileage() {
         return mileage;
     }
 

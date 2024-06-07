@@ -11,6 +11,5 @@ public class DriverMenu extends Console{
         System.out.println("4: Get Commissions");
         System.out.println("5: Exit");
         separator('%');
-
     }
 }

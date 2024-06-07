@@ -45,8 +45,8 @@ public class Account {
 
     public enum UserType {
         CUSTOMER(1),
-        DRIVER(2),
-        OWNER(3),
+        OWNER(2),
+        DRIVER(3),
         ADMIN(4);
 
         private final int ordinal;
@@ -66,7 +66,7 @@ public class Account {
 
 
         public static UserType valueOf(int ordinal) throws NoSuchElementException {
-            return Arrays.stream(values).findFirst().filter(e -> e.getOrdinal()==ordinal).orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
+            return Arrays.stream(values).filter(e -> e.getOrdinal()==ordinal).findFirst().orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
         }
 
         public static int size(){

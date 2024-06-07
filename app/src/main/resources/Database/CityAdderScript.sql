@@ -28,6 +28,7 @@ INSERT INTO Place(name, lat, long) VALUES
 ('Yercaud', 11.8, 49.3);
 
 INSERT INTO Account(name, mobile, address, password, userType_id) VALUES
+('Tester', '1', 'Dungeon', '1', 1),
 ('Deepesh Kumarsamy', '9876543210', 'Vada malai, Nagar', 'D12K', 1),
 ('Balaji Shakthi Seelan', '8765432109', 'Singam Vayil, Kotai', 'BalaShakthi', 1),
 ('Gokul MP', '7654321098', 'Vengadam Seeran, Kuruthirai', 'Kuruthirai789', 1),
@@ -42,14 +43,14 @@ INSERT INTO Vehicle (name, seats, chargePerKm, owner_id, mileage, fuelType_id, v
 ('Toyota Camry', 5, 9.5, 4, 14.5, 1, 1), -- Owner: Yaman Sivamani
 ('Honda Accord', 5, 8.8, 5, 16.2, 1, 1), -- Owner: Shanmugam Govindasamy
 ('Nissan Altima', 5, 8.2, 4, 15.8, 1, 1), -- Owner: Yaman Sivamani
-('Chevrolet Malibu', 5, 9.1, 5, 17.4, 1, 1), -- Owner: Shanmugam Govindasamy
+('Chevrolet Malibu', 5, 9.1, 5, 17.4, 1, 1); -- Owner: Shanmugam Govindasamy
 
 -- SUVs
 INSERT INTO Vehicle (name, seats, chargePerKm, owner_id, mileage, fuelType_id, vehicleType_id) VALUES
 ('Toyota Fortuner', 7, 11.5, 4, 13.2, 1, 2), -- Owner: Yaman Sivamani
 ('Ford Explorer', 7, 12.3, 5, 15.9, 1, 2), -- Owner: Shanmugam Govindasamy
 ('Honda CR-V', 7, 10.8, 4, 14.7, 1, 2), -- Owner: Yaman Sivamani
-('Chevrolet Suburban', 7, 13.6, 5, 12.9, 1, 2), -- Owner: Shanmugam Govindasamy
+('Chevrolet Suburban', 7, 13.6, 5, 12.9, 1, 2); -- Owner: Shanmugam Govindasamy
 
 -- Hatchbacks
 INSERT INTO Vehicle (name, seats, chargePerKm, owner_id, mileage, fuelType_id, vehicleType_id) VALUES

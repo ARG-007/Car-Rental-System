@@ -1,6 +1,6 @@
 package arg.hozocabby.entities;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class RentalInfo {
     private Integer id;
@@ -8,11 +8,11 @@ public class RentalInfo {
     private Vehicle assignedVehicle;
     private Vehicle.VehicleType requestedVehicleType;
     private Place pickup, destination;
-    private Date pickupTime;
+    private Timestamp pickupTime;
 
     public RentalInfo() { }
 
-    public RentalInfo(Integer id, Account requester, Vehicle assignedVehicle, Vehicle.VehicleType requestedVehicleType, Place pickup, Place destination, Date pickupTime) {
+    public RentalInfo(Integer id, Account requester, Vehicle assignedVehicle, Vehicle.VehicleType requestedVehicleType, Place pickup, Place destination, Timestamp pickupTime) {
         this.id = id;
         this.requester = requester;
         this.assignedVehicle = assignedVehicle;
@@ -28,6 +28,10 @@ public class RentalInfo {
 
     public Account getRequester() {
         return requester;
+    }
+
+    public void setRequester(Account requester) {
+        this.requester = requester;
     }
 
     public Vehicle getAssignedVehicle() {
@@ -62,11 +66,11 @@ public class RentalInfo {
         this.destination = destination;
     }
 
-    public Date getPickupTime() {
+    public Timestamp getPickupTime() {
         return pickupTime;
     }
 
-    public void setPickupTime(Date pickupTime) {
+    public void setPickupTime(Timestamp pickupTime) {
         this.pickupTime = pickupTime;
     }
 

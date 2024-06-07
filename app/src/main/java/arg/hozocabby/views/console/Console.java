@@ -103,11 +103,84 @@ abstract class Console implements View{
 
     }
 
-    protected class Form{
-        private class Field{
-            String prompt;
+    class Table {
+        int colSize[];
+        List<String[]> rows = new ArrayList<>();
+        String[] headers;
 
+        private int tableWidth = 0;
+
+        char cornerSeparator = '+';
+        char verticalSeparator = '│';
+        char horizontalSeparator = '─';
+
+        public Table(){ }
+
+        public Table(String... headers) {
+            colSize = new int[headers.length];
+            this.headers = headers;
         }
+
+        public Table setHeaders(String... headers) {
+            colSize = new int[headers.length];
+            this.headers = headers;
+
+            return this;
+        }
+
+        private void reCalculateColSizes(){
+            for(int i = 0; i<headers.length; i++) {
+                if(headers[i].length()>colSize[i])
+                    colSize[i] = headers[i].length();
+            }
+
+            for(String[] entries : rows) {
+                for(int i = 0; i<entries.length; i++) {
+                    if(entries[i].length()>colSize[i])
+                        colSize[i] = entries[i].length();
+                }
+            }
+
+            tableWidth = 0;
+
+            for(int i : colSize) {
+                tableWidth += i + 2;
+            }
+        }
+
+        public Table addRow(String... entries) {
+            rows.add(entries);
+            System.out.println("Entries : ");
+            System.out.println(Arrays.toString(entries));
+            for(int i = 0; i<entries.length; i++) {
+                if(entries[i].length()>colSize[i])
+                    colSize[i] = entries[i].length();
+            }
+            return this;
+        }
+
+        public Table addRow(Object... entries) {
+            String[] temp = new String[entries.length];
+            for(int i = 0; i<entries.length; i++) {
+                if(entries[i].toString().length()>colSize[i]) {
+                    colSize[i] = entries[i].toString().length();
+                }
+                temp[i] = entries[i].toString();
+            }
+            rows.add(temp);
+            return this;
+        }
+
+        public void display() {
+            for(String[] s : rows) {
+                for(String c : s) {
+                    System.out.print(c);
+                    System.out.print('\t');
+                }
+                System.out.println("\n");
+            }
+        }
+
     }
 
     protected void separator(char c){

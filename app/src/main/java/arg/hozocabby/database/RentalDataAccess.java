@@ -47,7 +47,7 @@ public class RentalDataAccess {
                     Vehicle.VehicleType.valueOf(rs.getInt("requestedVehicleType_id")),
                     db.getPlaceDataAccess().getPlaceById(rs.getInt("pickupPlace_id")).get(),
                     db.getPlaceDataAccess().getPlaceById(rs.getInt("destinationPlace_id")).get(),
-                    rs.getDate("pickupTime")
+                    rs.getTimestamp("pickupTime")
             );
 
             int dID = rs.getInt("driver_id");
@@ -58,7 +58,7 @@ public class RentalDataAccess {
                     ri,
                     driver,
                     rs.getDouble("distance"),
-                    rs.getDate("fareEndTime"),
+                    rs.getTimestamp("fareEndTime"),
                     rs.getDouble("fareCost"),
                     Rental.RentalStatus.valueOf(rs.getInt("rentalStatus_id"))
             );
@@ -88,7 +88,7 @@ public class RentalDataAccess {
     private List<Rental> getRentalsBy(String statement, Integer param) throws DataSourceException, DataAccessException{
         ArrayList<Rental> rentals = new ArrayList<>();
 
-        try(PreparedStatement ps = db.getPreparedStatement(RENTAL_QUERY)) {
+        try(PreparedStatement ps = db.getPreparedStatement(statement)) {
             ps.setInt(1, param);
             ResultSet rs = ps.executeQuery();
 
@@ -157,7 +157,7 @@ public class RentalDataAccess {
             rentInFo.setInt(3,reIf.getRequestedVehicleType().getOrdinal());
             rentInFo.setInt(4, reIf.getPickup().id());
             rentInFo.setInt(5, reIf.getDestination().id());
-            rentInFo.setDate(6, reIf.getPickupTime());
+            rentInFo.setTimestamp(6, reIf.getPickupTime());
 
             rentInFo.executeUpdate();
 
@@ -166,7 +166,7 @@ public class RentalDataAccess {
             rent.setInt(1, rentInfoId);
             rent.setInt(2, rental.getDriver()!=null?rental.getDriver().getId():0);
             rent.setDouble(3, rental.getDistance());
-            rent.setDate(4, rental.getFareEndTime());
+            rent.setTimestamp(4, rental.getFareEndTime());
             rent.setDouble(5, rental.getCost());
 
             rent.executeUpdate();

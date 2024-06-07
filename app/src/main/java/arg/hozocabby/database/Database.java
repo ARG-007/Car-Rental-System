@@ -158,7 +158,7 @@ public class Database implements AutoCloseable{
      */
     synchronized int getLastInsertedId() throws DataSourceException{
         try (Statement s = getStatement()) {
-            ResultSet rs = s.executeQuery("SELECT last_inserted_row() as lir");
+            ResultSet rs = s.executeQuery("SELECT last_insert_rowid() as lir");
             rs.next();
             int id = rs.getInt("lir");
 

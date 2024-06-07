@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS Rental;
 DROP TABLE IF EXISTS Vehicle;
-DROP TABLE IF EXISTS Info;
+DROP TABLE IF EXISTS RentalInfo;
 DROP TABLE IF EXISTS Account;
 DROP TABLE IF EXISTS Place;
 DROP TABLE IF EXISTS VehicleStatus;
@@ -77,7 +77,7 @@ CREATE TABLE RentalStatus (
 
 INSERT INTO RentalStatus (status) VALUES ('Pending'), ('Ongoing'), ('Completed'), ('Cancelled');
 
-CREATE TABLE Info (
+CREATE TABLE RentalInfo (
     info_id INTEGER PRIMARY KEY AUTOINCREMENT,
     requester_id INTEGER ,
     requestedVehicle_id INTEGER,
@@ -102,7 +102,6 @@ CREATE TABLE Rental (
     fareCost REAL,
     rentalStatus_id INTEGER NOT NULL DEFAULT 1,
 
-    FOREIGN KEY (driver_id) REFERENCES Account(account_id),
-    FOREIGN KEY (info_id) REFERENCES Info(info_id),
+    FOREIGN KEY (info_id) REFERENCES RentalInfo(info_id),
     FOREIGN KEY (rentalStatus_id) REFERENCES RentalStatus(rentalStatus_id)
 );

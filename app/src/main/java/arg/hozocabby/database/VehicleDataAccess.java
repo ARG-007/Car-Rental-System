@@ -19,7 +19,7 @@ public class VehicleDataAccess {
 
     private static final String VEHICLE_BY_OWNER = VEHICLE_QUERY + " WHERE owner_id = ?";
     private static final String VEHICLE_BY_TYPE = VEHICLE_QUERY + " WHERE vehicleType_id = ?";
-    private static final String VEHICLE_BY_ID = VEHICLE_QUERY + " WHERE account_id = ?";
+    private static final String VEHICLE_BY_ID = VEHICLE_QUERY + " WHERE vehicle_id = ?";
     private static final String VEHICLE_BY_STATUS = VEHICLE_QUERY + " WHERE vehicleStatus_id = ?";
     private static final String VEHICLE_BY_TYPE_WITH_STATUS = VEHICLE_QUERY + " WHERE vehicleType_id = ? and vehicleStatus_id = ?";
     private static final String VEHICLE_CREATE = "INSERT INTO Vehicle(seats, name, chargePerKm, owner_id, mileage, fuelType_id, vehicleType_id) values (?, ?, ?, ?, ?, ?, ?)";
