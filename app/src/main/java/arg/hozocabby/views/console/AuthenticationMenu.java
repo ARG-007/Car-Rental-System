@@ -76,11 +76,12 @@ public class AuthenticationMenu extends Console {
             }
 
             if(loggedInAccount.isPresent()){
+                Account user = loggedInAccount.get();
                 switch(loggedInAccount.get().getType()){
-                    case ADMIN -> new AdminMenu().display();
-                    case CUSTOMER -> new CustomerMenu(loggedInAccount.get(), serviceRepository.getCustomerService()).display();
-                    case OWNER -> new OwnerMenu().display();
-                    case DRIVER -> new DriverMenu().display();
+                    case ADMIN -> new AdminMenu(user, serviceRepository.getAdminService()).display();
+                    case CUSTOMER -> new CustomerMenu(user, serviceRepository.getCustomerService()).display();
+                    case OWNER -> new OwnerMenu(user, serviceRepository.getOwnerService()).display();
+                    case DRIVER -> new DriverMenu(user, serviceRepository.getDriverService()).display();
                 }
             }
 

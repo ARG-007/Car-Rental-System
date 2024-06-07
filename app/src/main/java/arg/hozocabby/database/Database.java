@@ -111,7 +111,7 @@ public class Database implements AutoCloseable{
 
         if(Boolean.parseBoolean(props.getProperty("use_script_execute"))){
             executeFromSQLScript(Helper.getResourceAsStream(props.getProperty("db_create_script")));
-            executeFromSQLScript(Helper.getResourceAsStream(props.getProperty("db_city_add_script")));
+            executeFromSQLScript(Helper.getResourceAsStream(props.getProperty("db_data_add_script")));
         } else {
             try(InputStream is = Helper.getResourceAsStream("Database/template.db");
             ) {

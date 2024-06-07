@@ -128,8 +128,6 @@ public class AccountDataAccess {
         try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY)) {
             ResultSet rs = ps.executeQuery();
 
-            rs.updateRow();
-
             while(rs.next()){
                 queriedAccount = constructAccountResultSet(rs);
 

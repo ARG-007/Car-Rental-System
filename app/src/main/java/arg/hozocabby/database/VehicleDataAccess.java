@@ -24,7 +24,7 @@ public class VehicleDataAccess {
     private static final String VEHICLE_BY_TYPE_WITH_STATUS = VEHICLE_QUERY + " WHERE vehicleType_id = ? and vehicleStatus_id = ?";
     private static final String VEHICLE_CREATE = "INSERT INTO Vehicle(seats, name, chargePerKm, owner_id, mileage, fuelType_id, vehicleType_id) values (?, ?, ?, ?, ?, ?, ?)";
 
-    private static final String VEHICLE_UPDATE_STATUS = "UPDATE Vehicle SET status_id = ? WHERE vehicle_id = ?";
+    private static final String VEHICLE_UPDATE_STATUS = "UPDATE Vehicle SET vehicleStatus_id = ? WHERE vehicle_id = ?";
 
     VehicleDataAccess(Database db){
         this.db = db;
@@ -94,6 +94,10 @@ public class VehicleDataAccess {
         }
 
         return vehicles;
+    }
+
+    public List<Vehicle> getAllVehicle() throws DataSourceException, DataAccessException{
+        return getListOfVehicleBy(VEHICLE_QUERY);
     }
 
     public List<Vehicle> getVehiclesOfOwner(int ownerId) throws DataSourceException, DataAccessException {

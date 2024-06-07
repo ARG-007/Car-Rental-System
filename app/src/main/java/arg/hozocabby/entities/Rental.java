@@ -1,8 +1,8 @@
 package arg.hozocabby.entities;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.sql.Date;
 import java.util.NoSuchElementException;
 
 public class Rental {
@@ -14,15 +14,17 @@ public class Rental {
     private Timestamp fareEndTime;
     private Double cost;
     private RentalStatus status = RentalStatus.PENDING;
+    private Timestamp rentedOn;
 
     public Rental(RentalInfo info) {
         this.info = info;
 
         this.distance = info.getPickup().distanceBetween(info.getDestination());
         this.cost = info.getAssignedVehicle().getChargePerKm()*this.distance;
+        this.rentedOn = Timestamp.valueOf(LocalDateTime.now());
     }
 
-    public Rental(Integer id, RentalInfo info, Account driver, Double distance, Timestamp fareEndTime, Double cost, RentalStatus status) {
+    public Rental(Integer id, RentalInfo info, Account driver, Double distance, Timestamp fareEndTime, Double cost, RentalStatus status, Timestamp rentedOn) {
         this.id = id;
         this.info = info;
         this.driver = driver;
@@ -30,6 +32,7 @@ public class Rental {
         this.fareEndTime = fareEndTime;
         this.cost = cost;
         this.status = status;
+        this.rentedOn = rentedOn;
     }
 
     public enum RentalStatus {
@@ -108,4 +111,14 @@ public class Rental {
     public void setStatus(RentalStatus status) {
         this.status = status;
     }
+
+    public Timestamp getRentedOn() {
+        return rentedOn;
+    }
+
+    public boolean equals(Rental r) {
+        return this.getId().equals(r.getId());
+    }
+
+
 }

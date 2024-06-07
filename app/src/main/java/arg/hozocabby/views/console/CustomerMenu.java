@@ -8,10 +8,7 @@ import java.sql.Timestamp;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 public class CustomerMenu extends Console{
     private final Account customer;
@@ -20,8 +17,11 @@ public class CustomerMenu extends Console{
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yy : HH-mm");
 
-    private final RentalInfo rental = new RentalInfo();
+    private Rental currentRental = null;
+    private RentalInfo rental = new RentalInfo();
     private final List<Place> places;
+    private List<Rental> rentalHistory;
+
     private final Menu customerActionsMenu = new Menu();
     private final Menu rentalMenu = new Menu();
     private final Menu carTypeSelection = new Menu();
@@ -32,6 +32,7 @@ public class CustomerMenu extends Console{
         this.customerService = customerService;
 
         places = customerService.queryReachablePlaces();
+        rentalHistory = customerService.queryRentalHistory(cus.getId());
 
         customerActionsMenu
             .setOuterSeparator('~')
@@ -49,7 +50,7 @@ public class CustomerMenu extends Console{
             .setOuterSeparator('@')
             .setInnerSeparator('─')
             .setTitle("Rental Menu, Set/Change Fields")
-            .addOption("Set Pickup", "Set Destination", "Set Car Type", "Set Pickup Time")
+            .addOption("Set Pickup", "Set Destination", "Set Car Type", "Set Pickup Time", "Driver Assignment")
             .addOption("Calculate Fare", "Confirm", "Exit")
             .setPrompt("Enter Your Choice: ");
 
@@ -80,16 +81,15 @@ public class CustomerMenu extends Console{
 
 
 
-    void rentMenu()  throws DataSourceException {
+    private void rentMenu()  throws DataSourceException {
 
         int choice;
-
-        List<Place> placeList = customerService.queryReachablePlaces();
 
         Place pickup = null, destination = null;
         Vehicle selectedVehicle = null;
         Vehicle.VehicleType vehicleType = null;
         Timestamp pickupDate = null;
+        Boolean wantDriver = null;
 
         RentalInfo info = new RentalInfo();
 
@@ -100,99 +100,23 @@ public class CustomerMenu extends Console{
 
             switch(choice) {
                 case 1:
-                    if(destination != null) {
-                        Place finalDestination = destination;
-                        printPlaces(
-                            placeList
-                            .parallelStream()
-                            .filter((exPlace)->!exPlace.id().equals(finalDestination.id()))
-                            .toList()
-                        );
-                    }
-                    else
-                        printPlaces(placeList);
-                    separator('─');
-                    while(true){
-                        try{
-                            int place = integerInput("Pickup From Places Above[Enter Number]: ");
-                            System.out.println(place);
-
-                            Optional<Place> p;
-                            p = places
-                                    .stream()
-                                    .filter((op)->op.id()==place)
-                                    .findFirst();
-
-
-
-                            if(p.isEmpty())
-                                throw new NoSuchElementException();
-
-                            pickup = p.get();
-
-                            rentalMenu.changeOption(1, String.format("Change Pickup [%s]", pickup.name()));
-                            break;
-                        } catch (InputMismatchException | NumberFormatException e) {
-                            System.out.println("Enter The Number Left of Place Name");
-                        } catch (NoSuchElementException e) {
-                            System.out.println("Enter An Valid Place Number");
-                        } finally {
-                            separator('+');
-                        }
-
-                    }
+                    pickup = getPlaceInputExcluding("Enter Your Pickup Place: ", pickup, destination);
+                    rentalMenu.changeOption(1, String.format("Change Pickup [%s]", pickup.name()));
                     break;
                 case 2:
-                    if(pickup != null) {
-                        Place finalPickup = pickup;
-                        printPlaces(
-                            placeList
-                                .stream()
-                                .filter((exPlace)->!exPlace.id().equals(finalPickup.id()))
-                                .toList()
-                        );
-
-                    }
-                    else
-                        printPlaces(placeList);
-                    separator('─');
-                    while(true){
-                        try{
-                            int place = integerInput("Pickup From Places Above[Enter Number]: ");
-
-                            System.out.println(place);
-
-                            Optional<Place> p;
-                            p = places
-                                    .stream()
-                                    .filter((op)->op.id()==place)
-                                    .findFirst();
-
-
-                            if(p.isEmpty())
-                                throw new NoSuchElementException();
-
-                            destination = p.get();
-
-                            rentalMenu.changeOption(2, String.format("Change Destination [%s]", destination.name()));
-                            break;
-                        } catch (InputMismatchException | NumberFormatException e) {
-                            System.out.println("Enter The Number Left of Place Name");
-                        } catch (NoSuchElementException e) {
-                            System.out.println("Enter An Valid Place Number");
-                        } finally {
-                            separator('+');
-                        }
-                    }
+                    destination = getPlaceInputExcluding("Enter Your Destination Place: ", pickup, destination);
+                    rentalMenu.changeOption(2, String.format("Change Destination [%s]", destination.name()));
                     break;
                 case 3:
                     int carType = carTypeSelection.process();
                     vehicleType = Vehicle.VehicleType.valueOf(carType);
-                    List<Vehicle> vehicles = customerService.queryVehicleOfType(vehicleType);
+                    List<Vehicle> vehicles = customerService.queryAvailableVehicleOfType(vehicleType);
 
                     separator('=');
 
                     System.out.println("Vehicles Available Of This Type Are: ");
+
+                    separator('-');
 
                     Table t = new Table("Id", "Vehicle Name", "Charge Per Km", "Fuel Type");
 
@@ -218,31 +142,49 @@ public class CustomerMenu extends Console{
                     }
 
                     break;
+
                 case 4:
                     while(true){
                         try {
                             String date = input("Enter Pickup Time [Format: DD-MM-YY : hh-mm]: ");
                             pickupDate = Timestamp.valueOf(LocalDateTime.parse(date, dateFormatter));
-                            rentalMenu.changeOption(4, String.format("Change Pickup Time [%s]:", date));
+                            rentalMenu.changeOption(4, String.format("Change Pickup Time [%s]", date));
                             break;
                         } catch (DateTimeException pe){
                             System.out.println("Enter in Correct Format: [DD-MM-YY : hh-mm]");
                         }
                     }
                     break;
+
                 case 5:
-                    if(pickup!=null && destination!=null && vehicleType != null && pickupDate != null && selectedVehicle!=null) {
+                    while(true) {
+                        String dc= input("Do You Want An Driver To Be Assigned For The Vehicle (Yes/No): ").toLowerCase();
+                        if(dc.equals("y") || dc.equals("yes")){
+                            wantDriver = true;
+                        } else if(dc.equals("n") || dc.equals("no")) {
+                            wantDriver = false;
+                        } else {
+                            System.out.println("Enter Either 'Yes' or 'No'");
+                            continue;
+                        }
+                        rentalMenu.changeOption(5, String.format("Driver Assignment [%s]", (wantDriver)?"YES":"NO"));
+                        break;
+                    }
+
+                    break;
+                case 6:
+                    if(pickup!=null && destination!=null && vehicleType != null && pickupDate != null && selectedVehicle!=null && wantDriver !=null) {
                         double distance = pickup.distanceBetween(destination);
-                        System.out.println("Distance: " + distance + " KM");
-                        System.out.println("Fare Cost: " + distance*2.5);
+                        System.out.printf("Distance: %.2f KM\n", distance);
+                        System.out.printf("Fare Cost: %.2f \n", distance* selectedVehicle.getChargePerKm());
                     } else {
                         System.out.println("Fill All Fields");
                     }
 
                     break;
-                case 6:
+                case 7:
 
-                    if(pickup!=null && destination!=null && vehicleType != null && pickupDate != null && selectedVehicle!=null) {
+                    if(pickup!=null && destination!=null && vehicleType != null && pickupDate != null && selectedVehicle!=null && wantDriver!=null) {
                         rental.setRequester(customer);
                         rental.setAssignedVehicle(selectedVehicle);
                         rental.setPickup(pickup);
@@ -250,28 +192,23 @@ public class CustomerMenu extends Console{
                         rental.setRequestedVehicleType(vehicleType);
                         rental.setPickupTime(pickupDate);
 
-                        customerService.bookRent(rental);
+                        currentRental = customerService.bookRent(rental);
+                        rentalHistory.add(currentRental);
 
-
-                        rentalMenu
-                                .changeOption(1, "Set Pickup")
-                                .changeOption(2, "Set Destination")
-                                .changeOption(3, "Set Car Type")
-                                .changeOption(4, "Set Pickup Time");
-                        return;
                     } else {
                         System.out.println("Fill All Fields");
+                        break;
                     }
 
 
-                    break;
-                case 7:
+                case 8:
 
                     rentalMenu
                         .changeOption(1, "Set Pickup")
                         .changeOption(2, "Set Destination")
                         .changeOption(3, "Set Car Type")
-                        .changeOption(4, "Set Pickup Time");
+                        .changeOption(4, "Set Pickup Time")
+                        .changeOption(5, "Driver Assignment");
 
                     return;
             }
@@ -280,7 +217,7 @@ public class CustomerMenu extends Console{
 
     }
 
-    void printPlaces(List<Place> places){
+    private void printPlaces(List<Place> places){
         int size = places.size();
         int pivot = size/2;
 
@@ -291,23 +228,103 @@ public class CustomerMenu extends Console{
         }
     }
 
-    void rentalHistory() throws DataSourceException{
-        List<Rental> rentals = customerService.queryRentalHistory(customer.getId());
+    private Place getPlaceInputExcluding(String prompt, Place... Exclude) {
+        List<Place> validPlaces = places.stream()
+                .filter(p -> {
+                    for(Place i : Exclude) {
+                        if(i!=null && p.id().equals(i.id()))
+                            return false;
+                    }
+                    return true;
+                })
+                .toList();
+
+        int size = validPlaces.size();
+        int pivot = size/2;
+        int columnWidth = 25;
+
+        for (int i = 0; i < size - pivot; i++) {
+            String col1 = String.format("%2d: %s", validPlaces.get(i).id(), validPlaces.get(i).name());
+
+            int spaces = 25 - col1.length();
+
+            System.out.printf(col1);
+            for(int f = 0;f<spaces;f++) System.out.print(" ");
+            if(i+pivot+1 < size)
+                System.out.printf("%2d: %s", validPlaces.get(i+pivot+1).id(), validPlaces.get(i+pivot+1).name());
+            System.out.println();
+        }
+
+        separator('+');
+
+        while(true) {
+            try {
+                int placeId = integerInput(prompt);
+                return validPlaces.parallelStream().filter(place -> place.id().equals(placeId)).findFirst().orElseThrow();
+            } catch (InputMismatchException | NumberFormatException e) {
+                System.out.println("Enter The Number Left of Place Name");
+            } catch (NoSuchElementException e) {
+                System.out.println("Enter An Valid Place Number");
+            }
+
+        }
+
+
+
+    }
+
+    private void rentalHistory() throws DataSourceException{
 
         Table t = new Table("ID", "Vehicle Name", "Pickup Location", "Destination Location", "Pickup Time", "Cost", "Status");
 
-        for(Rental r : rentals){
-            t.addRow(r.getId(), r.getInfo().getAssignedVehicle().getName(), r.getInfo().getPickup(), r.getInfo().getDestination(), r.getInfo().getPickupTime(), r.getCost(), r.getStatus());
+        for(Rental r : rentalHistory){
+            t.addRow(
+                r.getId(),
+                r.getInfo().getAssignedVehicle().getName(),
+                r.getInfo().getPickup(),
+                r.getInfo().getDestination(),
+                r.getInfo().getPickupTime(),
+                String.format("%.2f",r.getCost()),
+                r.getStatus()
+            );
         }
 
         t.display();
     }
 
-    void cancelRental() throws DataSourceException{
-        List<Rental> rentals = customerService.queryRentalHistory(customer.getId());
+    private void cancelRental() throws DataSourceException{
+        System.out.println("Your Pending Rental History Is: ");
 
-        rentalHistory();
+        List<Rental> pendingRents = rentalHistory.parallelStream().filter(r->r.getStatus() == Rental.RentalStatus.PENDING).toList();
 
+        Table t = new Table("ID", "Vehicle Name", "Pickup Location", "Destination Location", "Pickup Time", "Cost", "Status");
+
+
+        for(Rental r : pendingRents){
+            t.addRow(
+                r.getId(),
+                r.getInfo().getAssignedVehicle().getName(),
+                r.getInfo().getPickup(),
+                r.getInfo().getDestination(),
+                r.getInfo().getPickupTime(),
+                String.format("%.2f",r.getCost()),
+                r.getStatus()
+            );
+        }
+
+        t.display();
+
+
+        try {
+            int rentId = integerInput("Enter The ID of the Rental you want to cancel: ");
+
+            Rental cancellable = pendingRents.parallelStream().filter(r->r.getId().equals(rentId)).findFirst().orElseThrow();
+            customerService.cancelRent(cancellable);
+        } catch (NumberFormatException | InputMismatchException ae) {
+            System.out.println("Enter Only The ID Number");
+        } catch(NoSuchElementException nse){
+            System.out.println("Invalid ID, Enter In The ID From Table");
+        }
 
     }
 

@@ -1,6 +1,7 @@
 package arg.hozocabby.views.console;
 
 import arg.hozocabby.entities.Account;
+import arg.hozocabby.entities.Rental;
 import arg.hozocabby.views.View;
 
 import java.util.*;
@@ -10,9 +11,9 @@ abstract class Console implements View{
     protected Scanner input = new Scanner(System.in);
 
     protected class Menu{
-        char outerSeparator = '\0', innerSeparator = '\0';
-        String title, prompt;
-        LinkedHashMap<Integer, String> menuOptions = new LinkedHashMap<>();
+        private char outerSeparator = '\0', innerSeparator = '\0';
+        private String title, prompt;
+        private LinkedHashMap<Integer, String> menuOptions = new LinkedHashMap<>();
 
         private int index = 1;
 
@@ -104,15 +105,18 @@ abstract class Console implements View{
     }
 
     class Table {
-        int colSize[];
-        List<String[]> rows = new ArrayList<>();
-        String[] headers;
+        private int[] colSize;
+        private List<String[]> rows = new ArrayList<>();
+        private String[] headers;
 
         private int tableWidth = 0;
 
-        char cornerSeparator = '+';
-        char verticalSeparator = '│';
-        char horizontalSeparator = '─';
+        private char cornerSeparator = '+';
+        private char topSeparator = '┬', middleSeparator = '┼', bottomSeparator='┴';
+        private char tlCorner = '┌', trCorner = '┐', brCorner ='┘', blConer = '└';
+        private char leftCorner = '├', rightCorner = '┤';
+        private char verticalSeparator = '│';
+        private char horizontalSeparator = '─';
 
         public Table(){ }
 
@@ -144,42 +148,85 @@ abstract class Console implements View{
             tableWidth = 0;
 
             for(int i : colSize) {
-                tableWidth += i + 2;
+                tableWidth += i + 3;
             }
+
+            tableWidth -= 1;
         }
 
         public Table addRow(String... entries) {
             rows.add(entries);
-            System.out.println("Entries : ");
-            System.out.println(Arrays.toString(entries));
-            for(int i = 0; i<entries.length; i++) {
-                if(entries[i].length()>colSize[i])
-                    colSize[i] = entries[i].length();
-            }
             return this;
+        }
+
+        public void clearRows(){
+            rows.clear();
         }
 
         public Table addRow(Object... entries) {
             String[] temp = new String[entries.length];
             for(int i = 0; i<entries.length; i++) {
-                if(entries[i].toString().length()>colSize[i]) {
-                    colSize[i] = entries[i].toString().length();
-                }
                 temp[i] = entries[i].toString();
             }
             rows.add(temp);
             return this;
         }
 
-        public void display() {
-            for(String[] s : rows) {
-                for(String c : s) {
-                    System.out.print(c);
-                    System.out.print('\t');
-                }
-                System.out.println("\n");
+        private void tableSeparator(int place){
+            char middleSep, lCor, rCor;
+            if(place == 1){
+                lCor = tlCorner;
+                rCor = trCorner;
+                middleSep = topSeparator;
+            } else if(place == 2) {
+                lCor = leftCorner;
+                rCor = rightCorner;
+                middleSep = middleSeparator;
+            } else {
+                lCor = blConer;
+                rCor = brCorner;
+                middleSep = bottomSeparator;
             }
+            System.out.print(lCor);
+            for (int i = 0; i< colSize.length;i++){
+                for(int c=0; c<colSize[i]+2;c++){
+                    System.out.print(horizontalSeparator);
+                }
+                if(i!=colSize.length-1)
+                    System.out.print(middleSep);
+            }
+            System.out.println(rCor);
+
         }
+
+        public void display() {
+            reCalculateColSizes();
+
+            tableSeparator(1);
+            System.out.print(verticalSeparator);
+            for(int i = 0;i< headers.length;i++) {
+
+                System.out.printf(" %-"+colSize[i]+"s "+verticalSeparator, headers[i]);
+            }
+            System.out.println();
+            tableSeparator(2);
+
+            for(int r =0 ; r< rows.size();r++) {
+                String[] s = rows.get(r);
+                System.out.print(verticalSeparator);
+                for(int i = 0;i <s.length;i++) {
+
+                    System.out.printf(" %-"+colSize[i]+"s "+verticalSeparator, s[i]);
+                }
+                System.out.println();
+
+                if(r!= rows.size()-1)
+                    tableSeparator(2);
+            }
+            tableSeparator(3);
+        }
+
+
 
     }
 
@@ -217,6 +264,24 @@ abstract class Console implements View{
 
     protected Long longInput(String prompt){
         return Long.parseLong(input(prompt));
+    }
+
+    protected void printRentals(List<Rental> rentals) {
+        Table t = new Table("ID", "Vehicle Name", "Pickup Location", "Destination Location", "Pickup Time", "Cost", "Status");
+
+        for(Rental r : rentals){
+            t.addRow(
+                    r.getId(),
+                    r.getInfo().getAssignedVehicle().getName(),
+                    r.getInfo().getPickup(),
+                    r.getInfo().getDestination(),
+                    r.getInfo().getPickupTime(),
+                    String.format("%.2f",r.getCost()),
+                    r.getStatus()
+            );
+        }
+
+        t.display();
     }
 
 }

@@ -99,6 +99,7 @@ CREATE TABLE Rental (
     driver_id INTEGER NULL,
     distance REAL,
     fareEndTime DATETIME,
+    rentedOn DATETIME DEFAULT DATETIME,
     fareCost REAL,
     rentalStatus_id INTEGER NOT NULL DEFAULT 1,
 

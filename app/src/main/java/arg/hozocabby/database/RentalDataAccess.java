@@ -20,11 +20,12 @@ public class RentalDataAccess {
     private static final String RENTAL_QUERY = "SELECT * FROM Rental FULL JOIN RentalInfo USING(info_id)";
 
     private static final String RENTAL_UPDATE_DRIVER= "UPDATE Rental SET driver_id = ? WHERE rental_id = ?";
-    private static final String RENTAL_UPDATE_STATUS = "UPDATE Rental SET status_id = ? WHERE rental_id = ?";
+    private static final String RENTAL_UPDATE_STATUS = "UPDATE Rental SET rentalStatus_id = ? WHERE rental_id = ?";
 
     private static final String RENTAL_INFO_CREATE = "INSERT INTO RentalInfo (requester_id, requestedVehicle_id, requestedVehicleType_id, pickupPlace_id, destinationPlace_id, pickupTime) VALUES (?, ?, ?, ?, ?, ?)";
-    private static final String RENTAL_CREATE = "INSERT INTO Rental(info_id, driver_id, distance, fareEndTime, fareCost) VALUES (?, ?, ?, ?, ?)";
+    private static final String RENTAL_CREATE = "INSERT INTO Rental(info_id, driver_id, distance, fareEndTime, fareCost, rentedOn) VALUES (?, ?, ?, ?, ?, ?)";
 
+    private static final String RENTAL_QUERY_BY_ID = RENTAL_QUERY + " WHERE rental_id = ? ";
     private static final String RENTAL_QUERY_BY_DRIVER_ID = RENTAL_QUERY + " WHERE driver_id = ? ";
     private static final String RENTAL_QUERY_BY_STATUS = RENTAL_QUERY + " WHERE rentalStatus_id = ?";
     private static final String RENTAL_QUERY_BY_CUSTOMER = RENTAL_QUERY + " WHERE requester_id = ? ";
@@ -60,12 +61,26 @@ public class RentalDataAccess {
                     rs.getDouble("distance"),
                     rs.getTimestamp("fareEndTime"),
                     rs.getDouble("fareCost"),
-                    Rental.RentalStatus.valueOf(rs.getInt("rentalStatus_id"))
+                    Rental.RentalStatus.valueOf(rs.getInt("rentalStatus_id")),
+                    rs.getTimestamp("rentedOn")
             );
 
             return ren;
         } catch(SQLException sql) {
             throw new DataAccessException(sql);
+        }
+    }
+
+    public Rental getRentalOfId(int id) throws DataSourceException, DataAccessException {
+        try(PreparedStatement ps = db.getPreparedStatement(RENTAL_QUERY_BY_ID)) {
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+
+            return constructInfoFrom(rs);
+        } catch (SQLException se) {
+            throw new DataAccessException(se);
         }
     }
 
@@ -168,6 +183,7 @@ public class RentalDataAccess {
             rent.setDouble(3, rental.getDistance());
             rent.setTimestamp(4, rental.getFareEndTime());
             rent.setDouble(5, rental.getCost());
+            rent.setTimestamp(6, rental.getRentedOn());
 
             rent.executeUpdate();
 
@@ -175,7 +191,7 @@ public class RentalDataAccess {
 
             RentalInfo newInfo = new RentalInfo(rentInfoId, reIf.getRequester(), reIf.getAssignedVehicle(), reIf.getRequestedVehicleType(), reIf.getPickup(), reIf.getDestination(), reIf.getPickupTime());
 
-            return new Rental(rentId, newInfo, rental.getDriver(), rental.getDistance(), rental.getFareEndTime(), rental.getCost(), rental.getStatus());
+            return new Rental(rentId, newInfo, rental.getDriver(), rental.getDistance(), rental.getFareEndTime(), rental.getCost(), rental.getStatus(), rental.getRentedOn());
 
         } catch (SQLException sql){
             throw new DataAccessException(sql);

@@ -15,9 +15,9 @@ public class CustomerService {
         this.db = db;
     }
 
-    public List<Vehicle> queryVehicleOfType(Vehicle.VehicleType type) throws DataSourceException {
+    public List<Vehicle> queryAvailableVehicleOfType(Vehicle.VehicleType type) throws DataSourceException {
         try {
-            return db.getVehicleDataAccess().getVehiclesByType(type);
+            return db.getVehicleDataAccess().getVehicleOfTypeWithStatus(type, Vehicle.VehicleStatus.AVAILABLE);
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
             System.err.println(dae.getStackTrace());
@@ -39,34 +39,53 @@ public class CustomerService {
 //
 //    }
 
-    public void bookRent(RentalInfo info) throws DataSourceException{
+    public Rental bookRent(RentalInfo info) throws DataSourceException{
         Rental rent = new Rental(info);
 
 
         try {
 //            List<Rental> previousRentals = db.getRentalDataAccess().getRentalOfCustomer(info.getRequester().getId());
 
-            db.getRentalDataAccess().addRental(rent);
+            rent = db.getRentalDataAccess().addRental(rent);
             db.getVehicleDataAccess().updateVehicleStatus(info.getAssignedVehicle().getId(), Vehicle.VehicleStatus.BOOKED);
-
 
         } catch (DataAccessException dae) {
             System.err.println(dae.getMessage());
         }
+        return rent;
     }
 
     public boolean cancelRent(int rentId) throws DataSourceException{
+
         try {
-            return db.getRentalDataAccess().updateRentalStatus(rentId, Rental.RentalStatus.CANCELLED);
+            cancelRent( db.getRentalDataAccess().getRentalOfId(rentId));
+
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
             System.err.println(dae.getStackTrace());
             return false;
         }
+
+        return false;
     }
 
-    public void cancelRent(Rental r) throws DataSourceException{
-        cancelRent(r.getId());
+    public boolean cancelRent(Rental r) throws DataSourceException{
+        try {
+
+            if(db.getRentalDataAccess().updateRentalStatus(r.getId(), Rental.RentalStatus.CANCELLED)) {
+                return db.getVehicleDataAccess().updateVehicleStatus(
+                        r.getInfo().getAssignedVehicle().getId(),
+                        Vehicle.VehicleStatus.AVAILABLE
+                );
+            }
+
+        } catch (DataAccessException dae) {
+            System.err.print(dae.getMessage());
+            System.err.println(dae.getStackTrace());
+            return false;
+        }
+
+        return false;
     }
 
     public List<Rental> queryRentalHistory(int accountId) throws DataSourceException{
