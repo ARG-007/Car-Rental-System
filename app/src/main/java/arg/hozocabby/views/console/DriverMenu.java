@@ -29,6 +29,24 @@ public class DriverMenu extends Console{
 
     }
 
+    protected void printRentals(List<Rental> rentals) {
+        Table t = new Table("ID", "Vehicle Name", "Pickup Location", "Destination Location", "Pickup Time", "Cost", "Status");
+
+        for(Rental r : rentals){
+            t.addRow(
+                    r.getId(),
+                    r.getInfo().getAssignedVehicle().getName(),
+                    r.getInfo().getPickup(),
+                    r.getInfo().getDestination(),
+                    r.getInfo().getPickupTime(),
+                    String.format("%.2f",r.getCost()),
+                    r.getStatus()
+            );
+        }
+
+        t.display();
+    }
+
 
     @Override
     public void display() throws DataSourceException {

@@ -6,12 +6,54 @@ import arg.hozocabby.views.View;
 
 import java.util.*;
 
+
+/**
+ * This abstract {@code Console} class pseudo-implements {@code View}, The
+ * class provides some basic utilities like input parsing, printing
+ * utilities like {@code Table} and {@code Menu}.
+ */
 abstract class Console implements View{
+
+    /**
+     * {@code CONSOLE_WIDTH} and {@code CONSOLE_HEIGHT} are constants that
+     * specifies what the {@code Console} and its subsequent inheritors
+     * regard as the dimensions of the console window.
+     */
     protected static final int CONSOLE_WIDTH = 214 , CONSOLE_HEIGHT=67;
 
-    protected Scanner input = new Scanner(System.in);
 
+    /**
+     * {@code Scanner} Object that is used in input parsing methods present in this class
+     */
+    private final Scanner input = new Scanner(System.in);
+
+    /**
+     * {@code Menu} is a menu options processing class that simplifies the routine of
+     * displaying the option and accepting an {@code Integer} option from the user
+     * while handling errors related to menu inputs.
+     * <p>
+     * Options added to the instance of this class will be auto-numbered starting from {@code 1}.
+     * <p>
+     * This class follows Builder Class Pattern, So chaining methods is the standard way.
+     * to build the menu
+     * <p>
+     * <bold>Example :</bold>
+     * <pre>{@code
+     *
+     * new Menu()
+     *      .setInnerSeparator('-')
+     *      .setOuterSeparator('=')
+     *      .setTitle("Example Menu")
+     *      .addOption("Option 1", "Option 2")
+     *      .setPrompt("Prompt: ");
+     *
+     * }</pre>
+     *
+     * Call {@code .process()} to display menu options and get user input, the method handles
+     * invalid inputs and input mismatch and returns when user enter correct option.
+     */
     protected class Menu{
+
         private char outerSeparator = '\0', innerSeparator = '\0';
         private String title, prompt;
         private LinkedHashMap<Integer, String> menuOptions = new LinkedHashMap<>();
@@ -105,7 +147,7 @@ abstract class Console implements View{
 
     }
 
-    class Table {
+    protected class Table {
         private int[] colSize;
         private List<String[]> rows = new ArrayList<>();
         private String[] headers;
@@ -279,22 +321,5 @@ abstract class Console implements View{
         return Long.parseLong(input(prompt));
     }
 
-    protected void printRentals(List<Rental> rentals) {
-        Table t = new Table("ID", "Vehicle Name", "Pickup Location", "Destination Location", "Pickup Time", "Cost", "Status");
-
-        for(Rental r : rentals){
-            t.addRow(
-                    r.getId(),
-                    r.getInfo().getAssignedVehicle().getName(),
-                    r.getInfo().getPickup(),
-                    r.getInfo().getDestination(),
-                    r.getInfo().getPickupTime(),
-                    String.format("%.2f",r.getCost()),
-                    r.getStatus()
-            );
-        }
-
-        t.display();
-    }
 
 }

@@ -303,12 +303,20 @@ public class CustomerMenu extends Console{
         }
 
         t.display();
-    }
+
+        input("Press Enter To Continue");    }
 
     private void cancelRental() throws DataSourceException{
         System.out.println("Your Pending Rental History Is: ");
 
         List<Rental> pendingRents = rentalHistory.parallelStream().filter(r->r.getStatus() == Rental.RentalStatus.PENDING).toList();
+
+        if(pendingRents.isEmpty()){
+            System.out.println("You Haven't Rented Any Car");
+
+            input("Press Enter To Continue");
+        }
+
 
         Table t = new Table("ID", "Vehicle Name", "Pickup Location", "Destination Location", "Pickup Time", "Cost", "Status");
 

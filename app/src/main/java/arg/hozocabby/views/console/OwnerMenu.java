@@ -69,6 +69,8 @@ public class OwnerMenu extends Console{
                         );
                     }
                     vehicleTable.display();
+
+                    input("Press Enter To Continue");
                     break;
                 case 2:
                     String name = input("Enter Model Of Your Vehicle [Car Manufacturer-Car Model]: ");
@@ -81,6 +83,8 @@ public class OwnerMenu extends Console{
                     ors.addVehicle(new Vehicle(name, type, this.owner, seats, cpk, mileage, fuel));
 
                     System.out.println("Added Successfully");
+
+                    input("Press Enter To Continue");
 
                     break;
                 case 3:
@@ -117,6 +121,8 @@ public class OwnerMenu extends Console{
                     } catch(NoSuchElementException nse){
                         System.out.println("Invalid ID, Enter In The ID From Table");
                     }
+
+                    input("Press Enter To Continue");
 
                     break;
                 case 4: return;

@@ -16,7 +16,7 @@ public class AuthenticationMenu extends Console {
     private final AuthenticationService authService;
     private final ServiceRepository serviceRepository;
 
-    private final Menu roleSelectionMenu = new Menu(), authenticationSelectionMenu = new Menu();
+    private final Menu roleSelectionMenu = new Menu(), authenticationSelectionMenu = new Menu(), specialAdminMenu = new Menu();
 
     public AuthenticationMenu(ServiceRepository serviceRepository){
         this.serviceRepository = serviceRepository;
@@ -31,6 +31,12 @@ public class AuthenticationMenu extends Console {
             .setPrompt("Enter Your Choice: ");
 
         authenticationSelectionMenu
+            .setOuterSeparator('@')
+            .setInnerSeparator('-')
+            .addOption("Login", "Register", "Back", "Exit")
+            .setPrompt("Select Authentication Mode: ");
+
+        specialAdminMenu
             .setOuterSeparator('@')
             .setInnerSeparator('-')
             .addOption("Login", "Register", "Back", "Exit")
@@ -55,18 +61,34 @@ public class AuthenticationMenu extends Console {
 
             clearScreen();
 
-            authenticationSelectionMenu.setTitle("Selected User Type: " + selectedRole);
-            int authenMode = authenticationSelectionMenu.process();
+            int authenMode;
+
+            if(selectedRole == Account.UserType.ADMIN) {
+                specialAdminMenu.setTitle("Selected User Type: " + selectedRole);
+                authenMode = specialAdminMenu.process();
+            } else {
+                authenticationSelectionMenu.setTitle("Selected User Type: " + selectedRole);
+                authenMode = authenticationSelectionMenu.process();
+            }
+
             clearScreen();
 
             Optional<Account> loggedInAccount = Optional.empty();
 
             try {
-                switch (authenMode){
-                    case 1: loggedInAccount = userLogin();break;
-                    case 2: loggedInAccount = userRegister();break;
-                    case 3: break;
-                    case 4: return;
+                if(selectedRole == Account.UserType.ADMIN) {
+                    switch (authenMode) {
+                        case 1: loggedInAccount = userLogin();break;
+                        case 2: break;
+                        case 3: return;
+                    }
+                } else {
+                    switch (authenMode){
+                        case 1: loggedInAccount = userLogin();break;
+                        case 2: loggedInAccount = userRegister();break;
+                        case 3: break;
+                        case 4: return;
+                    }
                 }
             } finally {
 //                separator('.');
