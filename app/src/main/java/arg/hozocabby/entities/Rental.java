@@ -60,7 +60,7 @@ public class Rental {
 
 
         public static RentalStatus valueOf(int ordinal) throws NoSuchElementException {
-            return Arrays.stream(values).filter(e -> e.getOrdinal()==ordinal).findFirst().orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal"));
+            return Arrays.stream(values).filter(e -> e.getOrdinal()==ordinal).findFirst().orElseThrow(()-> new NoSuchElementException("Enum Has No Constant With That Ordinal: "+ordinal));
         }
 
         public static int size(){

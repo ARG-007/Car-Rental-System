@@ -142,4 +142,26 @@ public class AccountDataAccess {
         return accounts;
     }
 
+    public List<Account> getAllAccountsOfType(Account.UserType ut) throws DataAccessException, DataSourceException{
+        ArrayList<Account> accounts = new ArrayList<>();
+
+        Account queriedAccount = null;
+        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_TYPE)) {
+            ps.setInt(1, ut.getOrdinal());
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                queriedAccount = constructAccountResultSet(rs);
+
+                saveToInternalReferenceMap(queriedAccount);
+
+                accounts.add(queriedAccount);
+            }
+        } catch (SQLException ex){
+            throw new DataAccessException(ex);
+        }
+
+        return accounts;
+    }
+
 }

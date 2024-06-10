@@ -7,7 +7,8 @@ import arg.hozocabby.views.View;
 import java.util.*;
 
 abstract class Console implements View{
-    private static final int CONSOLE_WIDTH = 80;
+    protected static final int CONSOLE_WIDTH = 214 , CONSOLE_HEIGHT=67;
+
     protected Scanner input = new Scanner(System.in);
 
     protected class Menu{
@@ -239,6 +240,18 @@ abstract class Console implements View{
 
     protected void clearScreen(){
         System.out.print("\033[2J\033[3J\033[H");
+    }
+
+    protected static String center(String text, int width) {
+        int center = width/2;
+        int textCenter = text.length()/2;
+
+        int pad = center-textCenter;
+
+        StringBuilder padding = new StringBuilder();
+        for(int i=0;i<pad;i++) padding.append(" ");
+
+        return padding.append(text).toString();
     }
 
     protected String input(String prompt){

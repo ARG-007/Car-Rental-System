@@ -10,7 +10,6 @@ import arg.hozocabby.exceptions.DataSourceException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +26,7 @@ public class RentalDataAccess {
 
     private static final String RENTAL_QUERY_BY_ID = RENTAL_QUERY + " WHERE rental_id = ? ";
     private static final String RENTAL_QUERY_BY_DRIVER_ID = RENTAL_QUERY + " WHERE driver_id = ? ";
+    private static final String RENTAL_QUERY_BY_DRIVER_ID_WITH_STATUS = RENTAL_QUERY_BY_DRIVER_ID + " and rentalStatus_id = ? ";
     private static final String RENTAL_QUERY_BY_STATUS = RENTAL_QUERY + " WHERE rentalStatus_id = ?";
     private static final String RENTAL_QUERY_BY_CUSTOMER = RENTAL_QUERY + " WHERE requester_id = ? ";
     private static final String RENTAL_QUERY_BY_VEHICLE_ID = RENTAL_QUERY + " WHERE requestedVehicle_id = ?";
@@ -100,11 +100,14 @@ public class RentalDataAccess {
         return rentals;
     }
 
-    private List<Rental> getRentalsBy(String statement, Integer param) throws DataSourceException, DataAccessException{
+    private List<Rental> getRentalsBy(String statement, Integer... param) throws DataSourceException, DataAccessException{
         ArrayList<Rental> rentals = new ArrayList<>();
 
         try(PreparedStatement ps = db.getPreparedStatement(statement)) {
-            ps.setInt(1, param);
+            int index = 1;
+            for(int i : param){
+                ps.setInt(index++, i);
+            }
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()) {
@@ -119,6 +122,10 @@ public class RentalDataAccess {
 
     public List<Rental> getRentalsWithDriver(int driverid) throws DataSourceException, DataAccessException{
         return getRentalsBy(RENTAL_QUERY_BY_DRIVER_ID, driverid);
+    }
+
+    public List<Rental> getRentalsWithDriverWithStatus(int driverid, Rental.RentalStatus rs) throws DataSourceException, DataAccessException{
+        return getRentalsBy(RENTAL_QUERY_BY_DRIVER_ID_WITH_STATUS, driverid, rs.getOrdinal());
     }
 
     public List<Rental> getRentalWithStatus(Rental.RentalStatus status) throws DataSourceException, DataAccessException {

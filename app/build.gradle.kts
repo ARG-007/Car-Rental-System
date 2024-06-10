@@ -19,6 +19,7 @@ tasks.run.configure {
     standardInput = System.`in`
 }
 
-tasks.run.configure {
-    mainClass = application.mainClass
+tasks.jar.configure{
+    manifest.attributes["Main-Class"] = application.mainClass
+    from (configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 }

@@ -3,7 +3,12 @@ package arg.hozocabby;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Helper {
@@ -13,7 +18,7 @@ public class Helper {
         return classLoader.getResourceAsStream(resource);
     }
 
-    public URL getResource(String resource){
+    public static URL getResource(String resource){
         return classLoader.getResource(resource);
     }
 
@@ -31,5 +36,15 @@ public class Helper {
             props.load(is);
         }
         return props;
+    }
+
+    public static List<String> getFileContent(String path) {
+
+        try {
+            return Files.readAllLines(Paths.get(getResource(path).toURI()));
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace(System.err);
+        }
+        return new ArrayList<>();
     }
 }

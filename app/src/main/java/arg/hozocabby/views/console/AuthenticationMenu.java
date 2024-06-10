@@ -44,20 +44,17 @@ public class AuthenticationMenu extends Console {
 
         while(true){
             clearScreen();
-//            exit = userSelectionMenu();
+
             int menuOutput = roleSelectionMenu.process();
             clearScreen();
 
             if(menuOutput == 5)
                 return;
-//            if(exit) {
-//                return;
-//            }
 
             selectedRole = Account.UserType.valueOf(menuOutput);
 
             clearScreen();
-//            int authenMode = authenticationSelectionMenu();
+
             authenticationSelectionMenu.setTitle("Selected User Type: " + selectedRole);
             int authenMode = authenticationSelectionMenu.process();
             clearScreen();

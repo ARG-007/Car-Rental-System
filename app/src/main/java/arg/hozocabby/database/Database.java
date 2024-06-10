@@ -45,7 +45,7 @@ public class Database implements AutoCloseable{
 
     private Database() throws DataSourceException {
 
-        if(Boolean.parseBoolean(props.getProperty("create_db"))){
+        if(!validateDatabase() || Boolean.parseBoolean(props.getProperty("create_db"))){
             createDatabase();
         }
         getConnection();
@@ -91,6 +91,10 @@ public class Database implements AutoCloseable{
         }
     }
 
+    static Properties getProps() {
+        return props;
+    }
+
     Statement getStatement() throws DataSourceException {
         try {
             return getConnection().createStatement();
@@ -108,6 +112,8 @@ public class Database implements AutoCloseable{
     }
 
     private void createDatabase() throws DataSourceException{
+
+
 
         if(Boolean.parseBoolean(props.getProperty("use_script_execute"))){
             executeFromSQLScript(Helper.getResourceAsStream(props.getProperty("db_create_script")));
@@ -139,14 +145,7 @@ public class Database implements AutoCloseable{
     }
 
     private boolean validateDatabase() throws DataSourceException{
-        try(Statement s = getStatement()) {
-
-//            s.executeQuery(LIST_TABLES);
-
-        } catch(SQLException sql) {
-            throw new DataSourceException("Cannot Validate Database: "+sql);
-        }
-        return true;
+       return Files.exists(Path.of(dbName));
     }
 
 

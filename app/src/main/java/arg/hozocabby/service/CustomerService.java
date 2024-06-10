@@ -7,6 +7,7 @@ import arg.hozocabby.exceptions.DataSourceException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class CustomerService {
     private final Database db;
@@ -20,7 +21,7 @@ public class CustomerService {
             return db.getVehicleDataAccess().getVehicleOfTypeWithStatus(type, Vehicle.VehicleStatus.AVAILABLE);
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
-            System.err.println(dae.getStackTrace());
+            dae.printStackTrace(System.err);
             return new ArrayList<>();
         }
     }
@@ -30,21 +31,39 @@ public class CustomerService {
             return db.getPlaceDataAccess().getPlaces();
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
-            System.err.println(dae.getStackTrace());
+            dae.printStackTrace(System.err);
             return new ArrayList<>();
         }
     }
 
-//    public List<Account> getAvailableDrivers() {
-//
-//    }
-
-    public Rental bookRent(RentalInfo info) throws DataSourceException{
+    public Rental bookRent(RentalInfo info, boolean driverAssignment) throws DataSourceException, NoSuchElementException {
         Rental rent = new Rental(info);
 
 
         try {
-//            List<Rental> previousRentals = db.getRentalDataAccess().getRentalOfCustomer(info.getRequester().getId());
+            if(driverAssignment){
+                List<Account> drivers = db.getAccountDataAccess().getAllAccountsOfType(Account.UserType.DRIVER);
+
+                List<Account> availableDrivers = new ArrayList<>();
+
+                for(Account d : drivers){
+                    boolean available = true;
+                    for(Rental r : db.getRentalDataAccess().getRentalsWithDriver(d.getId())) {
+                        if(r.getStatus() != Rental.RentalStatus.COMPLETED){
+                            available = false;
+                            break;
+                        }
+                    }
+                    if(available) availableDrivers.add(d);
+                }
+
+
+                if(drivers.isEmpty())
+                    throw new NoSuchElementException("NO_DRIVER_AVAILABLE");
+
+                rent.setDriver(drivers.get(0));
+            }
+
 
             rent = db.getRentalDataAccess().addRental(rent);
             db.getVehicleDataAccess().updateVehicleStatus(info.getAssignedVehicle().getId(), Vehicle.VehicleStatus.BOOKED);
@@ -53,6 +72,8 @@ public class CustomerService {
             System.err.println(dae.getMessage());
         }
         return rent;
+
+
     }
 
     public boolean cancelRent(int rentId) throws DataSourceException{
@@ -62,7 +83,7 @@ public class CustomerService {
 
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
-            System.err.println(dae.getStackTrace());
+            dae.printStackTrace(System.err);
             return false;
         }
 
@@ -81,7 +102,7 @@ public class CustomerService {
 
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
-            System.err.println(dae.getStackTrace());
+            dae.printStackTrace(System.err);
             return false;
         }
 
@@ -93,7 +114,7 @@ public class CustomerService {
             return db.getRentalDataAccess().getRentalOfCustomer(accountId);
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
-            System.err.println(dae.getStackTrace());
+            dae.printStackTrace(System.err);
             return new ArrayList<>();
         }
     }
@@ -101,4 +122,5 @@ public class CustomerService {
     public void queryRentalHistory(Account acc) throws DataSourceException{
         queryRentalHistory(acc.getId());
     }
+
 }

@@ -49,6 +49,8 @@ public class AdminMenu extends Console{
                         accountTable.addRow(acc.getId(), acc.getName(), acc.getPhone(), acc.getAddress(), acc.getType());
                     }
                     accountTable.display();
+
+                    input("Press Enter To Continue.....");
                     break;
                 case 2:
                     rentalTable.clearRows();
@@ -63,6 +65,8 @@ public class AdminMenu extends Console{
                         );
                     }
                     rentalTable.display();
+
+                    input("Press Enter To Continue.....");
                     break;
                 case 3:
                     vehicleTable.clearRows();
@@ -78,6 +82,7 @@ public class AdminMenu extends Console{
                         );
                     }
                     vehicleTable.display();
+                    input("Press Enter To Continue.....");
                     break;
                 case 4:
                     placeTable.clearRows();
@@ -90,6 +95,8 @@ public class AdminMenu extends Console{
                         );
                     }
                     placeTable.display();
+
+                    input("Press Enter To Continue.....");
                     break;
                 case 5: return;
             }

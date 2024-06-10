@@ -68,6 +68,7 @@ public class CustomerMenu extends Console{
         int choice;
 
         while(true){
+            clearScreen();
             choice = customerActionsMenu.process();
             switch(choice){
                 case 1: rentMenu(); break;
@@ -97,6 +98,8 @@ public class CustomerMenu extends Console{
             clearScreen();
             choice = rentalMenu.process();
             separator('-');
+
+            boolean allFieldsEntered = pickup!=null && destination!=null && vehicleType != null && pickupDate != null && selectedVehicle!=null && wantDriver !=null;
 
             switch(choice) {
                 case 1:
@@ -173,10 +176,18 @@ public class CustomerMenu extends Console{
 
                     break;
                 case 6:
-                    if(pickup!=null && destination!=null && vehicleType != null && pickupDate != null && selectedVehicle!=null && wantDriver !=null) {
+                    if(allFieldsEntered) {
                         double distance = pickup.distanceBetween(destination);
-                        System.out.printf("Distance: %.2f KM\n", distance);
-                        System.out.printf("Fare Cost: %.2f \n", distance* selectedVehicle.getChargePerKm());
+                        separator('=');
+                        double driverCost = (wantDriver)?distance*0.5:0;
+                        double fareCost = distance*selectedVehicle.getChargePerKm();
+
+                        System.out.printf("Distance      : %.2f KM\n", distance);
+                        System.out.printf("Driver Charges: %.2f Rs\n", driverCost);
+                        System.out.printf("Fare Cost     : %.2f Rs\n", fareCost);
+                        System.out.printf("Total Cost    : %.2f Rs\n", driverCost+fareCost);
+                        separator('=');
+                        input("Press Enter To Continue.....");
                     } else {
                         System.out.println("Fill All Fields");
                     }
@@ -184,7 +195,7 @@ public class CustomerMenu extends Console{
                     break;
                 case 7:
 
-                    if(pickup!=null && destination!=null && vehicleType != null && pickupDate != null && selectedVehicle!=null && wantDriver!=null) {
+                    if(allFieldsEntered) {
                         rental.setRequester(customer);
                         rental.setAssignedVehicle(selectedVehicle);
                         rental.setPickup(pickup);
@@ -192,8 +203,20 @@ public class CustomerMenu extends Console{
                         rental.setRequestedVehicleType(vehicleType);
                         rental.setPickupTime(pickupDate);
 
-                        currentRental = customerService.bookRent(rental);
-                        rentalHistory.add(currentRental);
+                        boolean retry = true;
+                        do {
+                            try {
+                                currentRental = customerService.bookRent(rental, wantDriver);
+                                rentalHistory.add(currentRental);
+                                retry = false;
+                                break;
+                            } catch (NoSuchElementException nse) {
+                                System.out.println("No Available Drivers Present, We Will Assign an driver at the time of starting rent");
+                                retry = input("Press Enter To Continue Renting Or Any Other Key To Cancel").equals("\r");
+                                wantDriver = false;
+                                rentalMenu.changeOption(5,"Driver Assignment [NO - NO AVAILABLE DRIVERS]");
+                            }
+                        } while(retry);
 
                     } else {
                         System.out.println("Fill All Fields");
@@ -217,17 +240,6 @@ public class CustomerMenu extends Console{
 
     }
 
-    private void printPlaces(List<Place> places){
-        int size = places.size();
-        int pivot = size/2;
-
-        for (int i = 0; i < size - pivot; i++) {
-            System.out.printf("%d: %s\t\t\t\t", places.get(i).id(), places.get(i).name());
-            if(i+pivot+1 < size) System.out.printf("%d: %s", places.get(i+pivot+1).id(), places.get(i+pivot+1).name());
-            System.out.println();
-        }
-    }
-
     private Place getPlaceInputExcluding(String prompt, Place... Exclude) {
         List<Place> validPlaces = places.stream()
                 .filter(p -> {
@@ -246,7 +258,7 @@ public class CustomerMenu extends Console{
         for (int i = 0; i < size - pivot; i++) {
             String col1 = String.format("%2d: %s", validPlaces.get(i).id(), validPlaces.get(i).name());
 
-            int spaces = 25 - col1.length();
+            int spaces = columnWidth - col1.length();
 
             System.out.printf(col1);
             for(int f = 0;f<spaces;f++) System.out.print(" ");
@@ -273,14 +285,15 @@ public class CustomerMenu extends Console{
 
     }
 
-    private void rentalHistory() throws DataSourceException{
+    private void rentalHistory(){
 
-        Table t = new Table("ID", "Vehicle Name", "Pickup Location", "Destination Location", "Pickup Time", "Cost", "Status");
+        Table t = new Table("ID", "Vehicle Name", "Driver Assigned", "Pickup Location", "Destination Location", "Pickup Time", "Cost", "Status");
 
         for(Rental r : rentalHistory){
             t.addRow(
                 r.getId(),
                 r.getInfo().getAssignedVehicle().getName(),
+                r.getDriver()!=null ? r.getDriver().getName() : "No Driver",
                 r.getInfo().getPickup(),
                 r.getInfo().getDestination(),
                 r.getInfo().getPickupTime(),
