@@ -14,14 +14,14 @@ import java.util.Optional;
 
 public class PlaceDataAccess {
 
-    private final Database db;
+    private final DatabaseManager dbMan;
 
     private static final String PLACE_QUERY= "SELECT * FROM Place";
     private static final String PLACE_QUERY_BY_ID= PLACE_QUERY + " WHERE place_id = ?";
     private static final String PLACE_CREATE = "INSERT INTO Place(name, lat, long) VALUES (?, ?, ?)";
 
-    PlaceDataAccess(Database db) {
-        this.db = db;
+    PlaceDataAccess(DatabaseManager dbMan) {
+        this.dbMan = dbMan;
     }
 
     private Place constructPlace(ResultSet rs) throws SQLException{
@@ -29,7 +29,7 @@ public class PlaceDataAccess {
     }
 
     public Optional<Place> getPlaceById(int id) throws DataAccessException, DataSourceException {
-        try(PreparedStatement ps = db.getPreparedStatement(PLACE_QUERY_BY_ID)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(PLACE_QUERY_BY_ID)) {
             ps.setInt(1, id);
 
             ResultSet rs = ps.executeQuery();
@@ -45,7 +45,7 @@ public class PlaceDataAccess {
 
     public List<Place> getPlaces() throws DataSourceException, DataAccessException{
         ArrayList<Place> places = new ArrayList<>();
-        try(Statement s = db.getStatement()){
+        try(Statement s = dbMan.getStatement()){
             ResultSet rs = s.executeQuery(PLACE_QUERY);
 
             while(rs.next()){
@@ -59,14 +59,14 @@ public class PlaceDataAccess {
     }
 
     public Place addPlace(String name, double lat, double lon) throws DataSourceException, DataAccessException{
-        try(PreparedStatement ps = db.getPreparedStatement(PLACE_CREATE)){
+        try(PreparedStatement ps = dbMan.getPreparedStatement(PLACE_CREATE)){
             ps.setString(1, name);
             ps.setDouble(2, lat);
             ps.setDouble(3, lon);
 
             ps.executeUpdate();
 
-            return new Place(db.getLastInsertedId(), name, lat, lon);
+            return new Place(dbMan.getLastInsertedId(), name, lat, lon);
         } catch (SQLException sql) {
             throw new DataAccessException(sql);
         }

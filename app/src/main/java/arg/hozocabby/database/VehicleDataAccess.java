@@ -1,6 +1,5 @@
 package arg.hozocabby.database;
 
-import arg.hozocabby.entities.Account;
 import arg.hozocabby.entities.Vehicle;
 import arg.hozocabby.exceptions.DataAccessException;
 import arg.hozocabby.exceptions.DataSourceException;
@@ -11,7 +10,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class VehicleDataAccess {
-    private final Database db;
+    private final DatabaseManager dbMan;
 
     private final HashMap<Integer, Vehicle> vehicleReferenceMap = new HashMap<>();
 
@@ -26,8 +25,8 @@ public class VehicleDataAccess {
 
     private static final String VEHICLE_UPDATE_STATUS = "UPDATE Vehicle SET vehicleStatus_id = ? WHERE vehicle_id = ?";
 
-    VehicleDataAccess(Database db){
-        this.db = db;
+    VehicleDataAccess(DatabaseManager dbMan){
+        this.dbMan = dbMan;
     }
 
     private void saveToInternalReferenceMap(Vehicle v){
@@ -40,7 +39,7 @@ public class VehicleDataAccess {
                     rs.getInt("vehicle_id"),
                     rs.getString("name"),
                     Vehicle.VehicleType.valueOf(rs.getInt("vehicleType_id")),
-                    db.getAccountDataAccess().getAccountByID(rs.getInt("owner_id")).get(),
+                    dbMan.getAccountDataAccess().getAccountByID(rs.getInt("owner_id")).get(),
                     rs.getInt("seats"),
                     rs.getDouble("chargePerKm"),
                     rs.getDouble("mileage"),
@@ -55,7 +54,7 @@ public class VehicleDataAccess {
     public Optional<Vehicle> getVehicleById(int id) throws DataSourceException, DataAccessException{
         if(vehicleReferenceMap.containsKey(id))
             return Optional.of(vehicleReferenceMap.get(id));
-        try(PreparedStatement ps = db.getPreparedStatement(VEHICLE_BY_ID)){
+        try(PreparedStatement ps = dbMan.getPreparedStatement(VEHICLE_BY_ID)){
             ps.setInt(1, id);
 
             ResultSet rs = ps.executeQuery();
@@ -76,7 +75,7 @@ public class VehicleDataAccess {
         ArrayList<Vehicle> vehicles = new ArrayList<>();
         Vehicle queriedVehicle = null;
 
-        try(PreparedStatement ps = db.getPreparedStatement(query)){
+        try(PreparedStatement ps = dbMan.getPreparedStatement(query)){
             int pi = 1;
             for(Integer value : values){
                 ps.setInt(pi++, value);
@@ -117,7 +116,7 @@ public class VehicleDataAccess {
     }
 
     public Vehicle addVehicle(Vehicle v) throws DataSourceException, DataAccessException{
-        try(PreparedStatement ps = db.getPreparedStatement(VEHICLE_CREATE)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(VEHICLE_CREATE)) {
             ps.setInt(1, v.getSeats());
             ps.setDouble(2, v.getChargePerKm());
             ps.setInt(3, v.getOwner().getId());
@@ -127,7 +126,7 @@ public class VehicleDataAccess {
 
             ps.executeUpdate();
 
-            Vehicle newV = new Vehicle(db.getLastInsertedId(), v.getName(), v.getVehicleType(), v.getOwner(), v.getSeats(), v.getChargePerKm(), v.getMileage(), v.getFuelType());
+            Vehicle newV = new Vehicle(dbMan.getLastInsertedId(), v.getName(), v.getVehicleType(), v.getOwner(), v.getSeats(), v.getChargePerKm(), v.getMileage(), v.getFuelType());
             saveToInternalReferenceMap(newV);
 
             return newV;
@@ -138,7 +137,7 @@ public class VehicleDataAccess {
 
     public boolean updateVehicleStatus(int id, Vehicle.VehicleStatus vs) throws DataAccessException, DataSourceException{
         boolean success = false;
-        try(PreparedStatement ps = db.getPreparedStatement(VEHICLE_UPDATE_STATUS)){
+        try(PreparedStatement ps = dbMan.getPreparedStatement(VEHICLE_UPDATE_STATUS)){
             ps.setInt(1, vs.getOrdinal());
             ps.setInt(2, id);
 

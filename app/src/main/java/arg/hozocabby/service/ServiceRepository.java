@@ -1,6 +1,6 @@
 package arg.hozocabby.service;
 
-import arg.hozocabby.database.Database;
+import arg.hozocabby.database.DatabaseManager;
 
 public class ServiceRepository {
     private final AuthenticationService authenticationService;
@@ -9,12 +9,12 @@ public class ServiceRepository {
     private final OwnerService ownerService;
     private final AdminService adminService;
 
-    public ServiceRepository(Database db) {
-        authenticationService = new AuthenticationService(db.getAccountDataAccess());
-        customerService = new CustomerService(db);
-        driverService = new DriverService(db);
-        ownerService = new OwnerService(db);
-        adminService = new AdminService(db);
+    public ServiceRepository(DatabaseManager dbMan) {
+        authenticationService = new AuthenticationService(dbMan.getAccountDataAccess());
+        customerService = new CustomerService(dbMan);
+        driverService = new DriverService(dbMan);
+        ownerService = new OwnerService(dbMan);
+        adminService = new AdminService(dbMan);
     }
 
     public AuthenticationService getAuthenticationService() {

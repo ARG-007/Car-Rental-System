@@ -1,6 +1,6 @@
 package arg.hozocabby.service;
 
-import arg.hozocabby.database.Database;
+import arg.hozocabby.database.DatabaseManager;
 import arg.hozocabby.entities.Account;
 import arg.hozocabby.entities.Place;
 import arg.hozocabby.entities.Rental;
@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdminService {
-    private final Database db;
+    private final DatabaseManager dbMan;
 
-    public AdminService(Database db) {
-        this.db = db;
+    public AdminService(DatabaseManager dbMan) {
+        this.dbMan = dbMan;
     }
 
     public List<Account> getAccounts() throws DataSourceException {
         try {
-            return db.getAccountDataAccess().getAllAccounts();
+            return dbMan.getAccountDataAccess().getAllAccounts();
         } catch (DataAccessException dae) {
             System.err.println(dae.getMessage());
             dae.printStackTrace(System.err);
@@ -30,7 +30,7 @@ public class AdminService {
 
     public List<Vehicle> getVehicles() throws DataSourceException {
         try {
-            return db.getVehicleDataAccess().getAllVehicle();
+            return dbMan.getVehicleDataAccess().getAllVehicle();
         } catch (DataAccessException dae) {
             System.err.println(dae.getMessage());
             dae.printStackTrace(System.err);
@@ -40,7 +40,7 @@ public class AdminService {
 
     public List<Rental> getRentals() throws DataSourceException {
         try {
-            return db.getRentalDataAccess().getAllRentals();
+            return dbMan.getRentalDataAccess().getAllRentals();
         } catch (DataAccessException dae) {
             System.err.println(dae.getMessage());
             dae.printStackTrace(System.err);
@@ -49,7 +49,7 @@ public class AdminService {
     }
     public List<Place> getPlaces() throws DataSourceException {
         try {
-            return db.getPlaceDataAccess().getPlaces();
+            return dbMan.getPlaceDataAccess().getPlaces();
         } catch (DataAccessException dae) {
             System.err.println(dae.getMessage());
             dae.printStackTrace(System.err);

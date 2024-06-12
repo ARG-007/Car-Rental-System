@@ -1,24 +1,25 @@
 package arg.hozocabby.service;
 
-import arg.hozocabby.database.Database;
+import arg.hozocabby.database.DatabaseManager;
 import arg.hozocabby.entities.*;
 import arg.hozocabby.exceptions.DataAccessException;
 import arg.hozocabby.exceptions.DataSourceException;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class CustomerService {
-    private final Database db;
+    private final DatabaseManager dbMan;
 
-    public CustomerService(Database db){
-        this.db = db;
+    public CustomerService(DatabaseManager dbMan){
+        this.dbMan = dbMan;
     }
 
     public List<Vehicle> queryAvailableVehicleOfType(Vehicle.VehicleType type) throws DataSourceException {
         try {
-            return db.getVehicleDataAccess().getVehicleOfTypeWithStatus(type, Vehicle.VehicleStatus.AVAILABLE);
+            return dbMan.getVehicleDataAccess().getVehicleOfTypeWithStatus(type, Vehicle.VehicleStatus.AVAILABLE);
 
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
@@ -29,7 +30,7 @@ public class CustomerService {
 
     public List<Place> queryReachablePlaces() throws DataSourceException{
         try {
-            return db.getPlaceDataAccess().getPlaces();
+            return dbMan.getPlaceDataAccess().getPlaces();
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
             dae.printStackTrace(System.err);
@@ -39,18 +40,18 @@ public class CustomerService {
 
     public Rental bookRent(RentalInfo info, boolean driverAssignment) throws DataSourceException, NoSuchElementException {
         Rental rent = new Rental(info);
-
+        EnumSet<Rental.RentalStatus> availablity = EnumSet.of(Rental.RentalStatus.COMPLETED, Rental.RentalStatus.CANCELLED);
 
         try {
             if(driverAssignment){
-                List<Account> drivers = db.getAccountDataAccess().getAllAccountsOfType(Account.UserType.DRIVER);
+                List<Account> drivers = dbMan.getAccountDataAccess().getAllAccountsOfType(Account.UserType.DRIVER);
 
                 List<Account> availableDrivers = new ArrayList<>();
 
                 for(Account d : drivers){
                     boolean available = true;
-                    for(Rental r : db.getRentalDataAccess().getRentalsWithDriver(d.getId())) {
-                        if(r.getStatus() != Rental.RentalStatus.COMPLETED){
+                    for(Rental r : dbMan.getRentalDataAccess().getRentalsWithDriver(d.getId())) {
+                        if(!availablity.contains(r.getStatus())){
                             available = false;
                             break;
                         }
@@ -67,8 +68,8 @@ public class CustomerService {
             }
 
 
-            rent = db.getRentalDataAccess().addRental(rent);
-            db.getVehicleDataAccess().updateVehicleStatus(info.getAssignedVehicle().getId(), Vehicle.VehicleStatus.BOOKED);
+            rent = dbMan.getRentalDataAccess().addRental(rent);
+            dbMan.getVehicleDataAccess().updateVehicleStatus(info.getAssignedVehicle().getId(), Vehicle.VehicleStatus.BOOKED);
 
         } catch (DataAccessException dae) {
             System.err.println(dae.getMessage());
@@ -81,7 +82,7 @@ public class CustomerService {
     public boolean cancelRent(int rentId) throws DataSourceException{
 
         try {
-            cancelRent( db.getRentalDataAccess().getRentalOfId(rentId));
+            cancelRent( dbMan.getRentalDataAccess().getRentalOfId(rentId));
 
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
@@ -95,8 +96,8 @@ public class CustomerService {
     public boolean cancelRent(Rental r) throws DataSourceException{
         try {
 
-            if(db.getRentalDataAccess().updateRentalStatus(r.getId(), Rental.RentalStatus.CANCELLED)) {
-                return db.getVehicleDataAccess().updateVehicleStatus(
+            if(dbMan.getRentalDataAccess().updateRentalStatus(r.getId(), Rental.RentalStatus.CANCELLED)) {
+                return dbMan.getVehicleDataAccess().updateVehicleStatus(
                         r.getInfo().getAssignedVehicle().getId(),
                         Vehicle.VehicleStatus.AVAILABLE
                 );
@@ -113,7 +114,7 @@ public class CustomerService {
 
     public List<Rental> queryRentalHistory(int accountId) throws DataSourceException{
         try {
-            return db.getRentalDataAccess().getRentalOfCustomer(accountId);
+            return dbMan.getRentalDataAccess().getRentalOfCustomer(accountId);
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
             dae.printStackTrace(System.err);

@@ -5,19 +5,18 @@ import arg.hozocabby.entities.Account;
 import arg.hozocabby.exceptions.DataAccessException;
 import arg.hozocabby.exceptions.DataSourceException;
 
-import java.util.EnumSet;
 import java.util.Optional;
 
 public class AuthenticationService {
-    AccountDataAccess accountMan;
+    AccountDataAccess accountDataAccess;
 
-    AuthenticationService(AccountDataAccess accountMan) {
-        this.accountMan = accountMan;
+    AuthenticationService(AccountDataAccess accountDataAccess) {
+        this.accountDataAccess = accountDataAccess;
     }
 
     public Account login(String phone, String password, Account.UserType type) throws IllegalArgumentException, DataSourceException, DataAccessException {
 
-        Optional<Account> loggedInUser = accountMan.getAccountByMobile(phone);
+        Optional<Account> loggedInUser = accountDataAccess.getAccountByMobile(phone);
         if(loggedInUser.isEmpty()) {
             throw new IllegalArgumentException("NO SUCH USER PRESENT");
         }
@@ -35,7 +34,7 @@ public class AuthenticationService {
     }
 
     public Account register(String name, String phone, String address, Account.UserType type, String password) throws IllegalArgumentException, DataSourceException, DataAccessException{
-        if(accountMan.containsAccount(phone)) {
+        if(accountDataAccess.containsAccount(phone)) {
             throw new IllegalArgumentException("USER ALREADY EXISTS");
         }
 
@@ -43,6 +42,6 @@ public class AuthenticationService {
             throw new IllegalArgumentException("EMPTY_PASSWORD");
         }
 
-        return accountMan.addAccount(name, phone, address, password, type);
+        return accountDataAccess.addAccount(name, phone, address, password, type);
     }
 }

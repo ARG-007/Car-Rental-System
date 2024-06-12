@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RentalDataAccess {
-    private final Database db;
+    private final DatabaseManager dbMan;
 
     private static final String RENTAL_QUERY = "SELECT * FROM Rental FULL JOIN RentalInfo USING(info_id)";
 
@@ -31,28 +31,28 @@ public class RentalDataAccess {
     private static final String RENTAL_QUERY_BY_CUSTOMER = RENTAL_QUERY + " WHERE requester_id = ? ";
     private static final String RENTAL_QUERY_BY_VEHICLE_ID = RENTAL_QUERY + " WHERE requestedVehicle_id = ?";
 
-    RentalDataAccess(Database db) {
-        this.db = db;
+    RentalDataAccess(DatabaseManager dbMan) {
+        this.dbMan = dbMan;
     }
 
     private Rental constructInfoFrom(ResultSet rs) throws DataSourceException, DataAccessException {
         try {
 
             int vID = rs.getInt("requestedVehicle_id");
-            Vehicle vehicle = vID!=0 ? db.getVehicleDataAccess().getVehicleById(vID).get():null;
+            Vehicle vehicle = vID!=0 ? dbMan.getVehicleDataAccess().getVehicleById(vID).get():null;
 
             RentalInfo ri = new RentalInfo(
                     rs.getInt("info_id"),
-                    db.getAccountDataAccess().getAccountByID(rs.getInt("requester_id")).get(),
+                    dbMan.getAccountDataAccess().getAccountByID(rs.getInt("requester_id")).get(),
                     vehicle,
                     Vehicle.VehicleType.valueOf(rs.getInt("requestedVehicleType_id")),
-                    db.getPlaceDataAccess().getPlaceById(rs.getInt("pickupPlace_id")).get(),
-                    db.getPlaceDataAccess().getPlaceById(rs.getInt("destinationPlace_id")).get(),
+                    dbMan.getPlaceDataAccess().getPlaceById(rs.getInt("pickupPlace_id")).get(),
+                    dbMan.getPlaceDataAccess().getPlaceById(rs.getInt("destinationPlace_id")).get(),
                     rs.getTimestamp("pickupTime")
             );
 
             int dID = rs.getInt("driver_id");
-            Account driver = dID!=0 ? db.getAccountDataAccess().getAccountByID(dID).get() : null;
+            Account driver = dID!=0 ? dbMan.getAccountDataAccess().getAccountByID(dID).get() : null;
 
             Rental ren = new Rental(
                     rs.getInt("rental_id"),
@@ -72,7 +72,7 @@ public class RentalDataAccess {
     }
 
     public Rental getRentalOfId(int id) throws DataSourceException, DataAccessException {
-        try(PreparedStatement ps = db.getPreparedStatement(RENTAL_QUERY_BY_ID)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(RENTAL_QUERY_BY_ID)) {
             ps.setInt(1, id);
 
             ResultSet rs = ps.executeQuery();
@@ -87,7 +87,7 @@ public class RentalDataAccess {
     public List<Rental> getAllRentals() throws DataSourceException, DataAccessException{
         ArrayList<Rental> rentals = new ArrayList<>();
 
-        try(PreparedStatement ps = db.getPreparedStatement(RENTAL_QUERY)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(RENTAL_QUERY)) {
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()) {
@@ -103,7 +103,7 @@ public class RentalDataAccess {
     private List<Rental> getRentalsBy(String statement, Integer... param) throws DataSourceException, DataAccessException{
         ArrayList<Rental> rentals = new ArrayList<>();
 
-        try(PreparedStatement ps = db.getPreparedStatement(statement)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(statement)) {
             int index = 1;
             for(int i : param){
                 ps.setInt(index++, i);
@@ -141,7 +141,7 @@ public class RentalDataAccess {
     }
 
     public boolean updateRentalDriver(int rentalId, int driverId) throws DataAccessException, DataSourceException {
-        try(PreparedStatement ps = db.getPreparedStatement(RENTAL_UPDATE_DRIVER)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(RENTAL_UPDATE_DRIVER)) {
             ps.setInt(1, driverId);
             ps.setInt(2, rentalId);
 
@@ -155,7 +155,7 @@ public class RentalDataAccess {
     }
 
     public boolean updateRentalStatus(int rentalId, Rental.RentalStatus status) throws DataAccessException, DataSourceException {
-        try(PreparedStatement ps = db.getPreparedStatement(RENTAL_UPDATE_STATUS)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(RENTAL_UPDATE_STATUS)) {
             ps.setInt(1, status.getOrdinal());
             ps.setInt(2, rentalId);
 
@@ -170,8 +170,8 @@ public class RentalDataAccess {
 
     public Rental addRental(Rental rental) throws DataSourceException, DataAccessException{
         try(
-            PreparedStatement rentInFo = db.getPreparedStatement(RENTAL_INFO_CREATE);
-            PreparedStatement rent = db.getPreparedStatement(RENTAL_CREATE);
+                PreparedStatement rentInFo = dbMan.getPreparedStatement(RENTAL_INFO_CREATE);
+                PreparedStatement rent = dbMan.getPreparedStatement(RENTAL_CREATE);
         ){
             RentalInfo reIf = rental.getInfo();
             rentInFo.setInt(1, reIf.getRequester().getId());
@@ -183,7 +183,7 @@ public class RentalDataAccess {
 
             rentInFo.executeUpdate();
 
-            int rentInfoId = db.getLastInsertedId();
+            int rentInfoId = dbMan.getLastInsertedId();
 
             rent.setInt(1, rentInfoId);
             rent.setInt(2, rental.getDriver()!=null?rental.getDriver().getId():0);
@@ -194,7 +194,7 @@ public class RentalDataAccess {
 
             rent.executeUpdate();
 
-            int rentId = db.getLastInsertedId();
+            int rentId = dbMan.getLastInsertedId();
 
             RentalInfo newInfo = new RentalInfo(rentInfoId, reIf.getRequester(), reIf.getAssignedVehicle(), reIf.getRequestedVehicleType(), reIf.getPickup(), reIf.getDestination(), reIf.getPickupTime());
 

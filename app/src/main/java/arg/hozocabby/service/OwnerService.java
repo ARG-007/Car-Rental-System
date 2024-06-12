@@ -1,8 +1,7 @@
 package arg.hozocabby.service;
 
-import arg.hozocabby.database.Database;
+import arg.hozocabby.database.DatabaseManager;
 import arg.hozocabby.entities.Account;
-import arg.hozocabby.entities.Rental;
 import arg.hozocabby.entities.Vehicle;
 import arg.hozocabby.exceptions.DataAccessException;
 import arg.hozocabby.exceptions.DataSourceException;
@@ -12,15 +11,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class OwnerService {
-    private final Database db;
+    private final DatabaseManager dbMan;
 
-    public OwnerService(Database db) {
-        this.db = db;
+    public OwnerService(DatabaseManager dbMan) {
+        this.dbMan = dbMan;
     }
 
     public Optional<Vehicle> addVehicle(Vehicle v) throws DataSourceException {
         try {
-            return Optional.of(db.getVehicleDataAccess().addVehicle(v));
+            return Optional.of(dbMan.getVehicleDataAccess().addVehicle(v));
         } catch(DataAccessException dae) {
             dae.printStackTrace(System.err);
         }
@@ -29,7 +28,7 @@ public class OwnerService {
 
     public List<Vehicle> getVehiclesOf(Account owner) throws DataSourceException{
         try {
-            return db.getVehicleDataAccess().getVehiclesOfOwner(owner.getId());
+            return dbMan.getVehicleDataAccess().getVehiclesOfOwner(owner.getId());
         } catch(DataAccessException dae) {
             dae.printStackTrace(System.err);
         }
@@ -39,7 +38,7 @@ public class OwnerService {
 
     public boolean retireVehicle(Vehicle v) throws DataSourceException{
         try {
-            return db.getVehicleDataAccess().updateVehicleStatus(v.getId(), Vehicle.VehicleStatus.RETIRED);
+            return dbMan.getVehicleDataAccess().updateVehicleStatus(v.getId(), Vehicle.VehicleStatus.RETIRED);
         } catch(DataAccessException dae) {
             dae.printStackTrace(System.err);
         }

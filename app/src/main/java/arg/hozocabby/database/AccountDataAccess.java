@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class AccountDataAccess {
-    private final Database db;
+    private final DatabaseManager dbMan;
 
     private final static String ACCOUNT_CREATE = "INSERT INTO Account(name, mobile, address, password, userType_id) VALUES (?, ?, ?, ?, ?)";
     private final static String ACCOUNT_QUERY = "SELECT * FROM Account ";
@@ -23,8 +23,8 @@ public class AccountDataAccess {
 
     private final HashMap<Integer, Account> accountReferenceMap = new HashMap<>();
 
-    AccountDataAccess(Database db){
-        this.db = db;
+    AccountDataAccess(DatabaseManager dbMan){
+        this.dbMan = dbMan;
     }
 
     private void saveToInternalReferenceMap(Account acc){
@@ -48,7 +48,7 @@ public class AccountDataAccess {
     }
 
     public boolean containsAccount(String mobile) throws DataAccessException, DataSourceException{
-        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_MOBILE)){
+        try(PreparedStatement ps = dbMan.getPreparedStatement(ACCOUNT_QUERY_BY_MOBILE)){
             ps.setString(1, mobile);
 
             ResultSet rs = ps.executeQuery();
@@ -61,7 +61,7 @@ public class AccountDataAccess {
 
     public Account addAccount(String name, String phone, String address, String password, Account.UserType type) throws DataAccessException, DataSourceException {
 
-        try(PreparedStatement statement = db.getPreparedStatement(ACCOUNT_CREATE)){
+        try(PreparedStatement statement = dbMan.getPreparedStatement(ACCOUNT_CREATE)){
             statement.setString(1, name);
             statement.setString(2, phone);
             statement.setString(3, address);
@@ -70,7 +70,7 @@ public class AccountDataAccess {
 
             statement.execute();
 
-            Account acc = new Account(db.getLastInsertedId(), name, address, phone, password, type);
+            Account acc = new Account(dbMan.getLastInsertedId(), name, address, phone, password, type);
 
             saveToInternalReferenceMap(acc);
 
@@ -83,7 +83,7 @@ public class AccountDataAccess {
     public Optional<Account> getAccountByID(int id) throws DataAccessException, DataSourceException{
         if(accountReferenceMap.containsKey(id))
             return Optional.of(accountReferenceMap.get(id));
-        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_ID)){
+        try(PreparedStatement ps = dbMan.getPreparedStatement(ACCOUNT_QUERY_BY_ID)){
             ps.setInt(1, id);
 
             ResultSet rs = ps.executeQuery();
@@ -102,7 +102,7 @@ public class AccountDataAccess {
     }
 
     public Optional<Account> getAccountByMobile(String mobile) throws DataSourceException, DataAccessException{
-        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_MOBILE)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(ACCOUNT_QUERY_BY_MOBILE)) {
             ps.setString(1, mobile);
 
             ResultSet rs = ps.executeQuery();
@@ -125,7 +125,7 @@ public class AccountDataAccess {
         ArrayList<Account> accounts = new ArrayList<>();
 
         Account queriedAccount = null;
-        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(ACCOUNT_QUERY)) {
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()){
@@ -146,7 +146,7 @@ public class AccountDataAccess {
         ArrayList<Account> accounts = new ArrayList<>();
 
         Account queriedAccount = null;
-        try(PreparedStatement ps = db.getPreparedStatement(ACCOUNT_QUERY_BY_TYPE)) {
+        try(PreparedStatement ps = dbMan.getPreparedStatement(ACCOUNT_QUERY_BY_TYPE)) {
             ps.setInt(1, ut.getOrdinal());
             ResultSet rs = ps.executeQuery();
 

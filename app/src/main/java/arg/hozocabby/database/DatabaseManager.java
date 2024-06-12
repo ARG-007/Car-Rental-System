@@ -13,14 +13,14 @@ import org.sqlite.SQLiteConfig;
 
 import arg.hozocabby.Helper;
 
-public class Database implements AutoCloseable{
+public class DatabaseManager implements AutoCloseable{
     private static final Properties props;
 
 
     private static final String dbName;
     private static final String CONNECTION_URL;
 
-    private static Database db;
+    private static DatabaseManager dbMan;
 
     private Connection connection;
     private static final SQLiteConfig CONN_CONFIG = new SQLiteConfig();
@@ -43,7 +43,7 @@ public class Database implements AutoCloseable{
         CONN_CONFIG.enforceForeignKeys(true);
     }
 
-    private Database() throws DataSourceException {
+    private DatabaseManager() throws DataSourceException {
 
         if(!validateDatabase() || Boolean.parseBoolean(props.getProperty("create_db"))){
             createDatabase();
@@ -57,11 +57,11 @@ public class Database implements AutoCloseable{
 
     }
 
-    public static Database getDatabase() throws DataSourceException{
-        if(db == null){
-            db = new Database();
+    public static DatabaseManager getDatabase() throws DataSourceException{
+        if(dbMan == null){
+            dbMan = new DatabaseManager();
         }
-        return db;
+        return dbMan;
     }
 
     public AccountDataAccess getAccountDataAccess(){

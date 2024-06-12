@@ -1,6 +1,6 @@
 package arg.hozocabby.service;
 
-import arg.hozocabby.database.Database;
+import arg.hozocabby.database.DatabaseManager;
 import arg.hozocabby.entities.Account;
 import arg.hozocabby.entities.Rental;
 import arg.hozocabby.entities.Vehicle;
@@ -11,15 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DriverService {
-    private Database db;
+    private final DatabaseManager dbMan;
 
-    DriverService(Database db) {
-        this.db = db;
+    DriverService(DatabaseManager dbMan) {
+        this.dbMan = dbMan;
     }
 
     public List<Rental> getAssignedRentals(Account driver) throws DataSourceException {
         try {
-            return db.getRentalDataAccess().getRentalsWithDriver(driver.getId());
+            return dbMan.getRentalDataAccess().getRentalsWithDriver(driver.getId());
         }catch (DataAccessException dae){
             dae.printStackTrace(System.err);
         }
@@ -28,7 +28,7 @@ public class DriverService {
 
     public List<Rental> getPendingRentals(Account driver) throws DataSourceException {
         try {
-            return db.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), Rental.RentalStatus.PENDING);
+            return dbMan.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), Rental.RentalStatus.PENDING);
         }catch (DataAccessException dae){
             dae.printStackTrace(System.err);
         }
@@ -37,7 +37,7 @@ public class DriverService {
 
     public List<Rental> getOngoingRentals(Account driver) throws DataSourceException {
         try {
-            return db.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), Rental.RentalStatus.ONGOING);
+            return dbMan.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), Rental.RentalStatus.ONGOING);
         }catch (DataAccessException dae){
             dae.printStackTrace(System.err);
         }
@@ -46,7 +46,7 @@ public class DriverService {
 
     public List<Rental> getCompletedRentals(Account driver) throws DataSourceException{
         try {
-            return db.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), Rental.RentalStatus.COMPLETED);
+            return dbMan.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), Rental.RentalStatus.COMPLETED);
         }catch (DataAccessException dae){
             dae.printStackTrace(System.err);
         }
@@ -56,8 +56,8 @@ public class DriverService {
     public boolean endRental(Account driver, Rental rentToBeEnded) throws DataSourceException{
         try {
             if(rentToBeEnded!=null && driver!=null && rentToBeEnded.getDriver().getId().equals(driver.getId())){
-                db.getRentalDataAccess().updateRentalStatus(rentToBeEnded.getId(), Rental.RentalStatus.COMPLETED);
-                db.getVehicleDataAccess().updateVehicleStatus(rentToBeEnded.getInfo().getAssignedVehicle().getId(), Vehicle.VehicleStatus.AVAILABLE);
+                dbMan.getRentalDataAccess().updateRentalStatus(rentToBeEnded.getId(), Rental.RentalStatus.COMPLETED);
+                dbMan.getVehicleDataAccess().updateVehicleStatus(rentToBeEnded.getInfo().getAssignedVehicle().getId(), Vehicle.VehicleStatus.AVAILABLE);
                 return true;
             }
         } catch(DataAccessException dae) {

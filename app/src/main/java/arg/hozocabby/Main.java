@@ -1,8 +1,7 @@
 package arg.hozocabby;
 
-import arg.hozocabby.database.Database;
+import arg.hozocabby.database.DatabaseManager;
 import arg.hozocabby.exceptions.DataSourceException;
-import arg.hozocabby.service.AuthenticationService;
 import arg.hozocabby.service.ServiceRepository;
 import arg.hozocabby.views.View;
 import arg.hozocabby.views.console.*;
@@ -10,7 +9,7 @@ import arg.hozocabby.views.console.*;
 public class Main {
     public static void main(String[] args){
 
-        try (Database db = Database.getDatabase()){
+        try (DatabaseManager db = DatabaseManager.getDatabase()){
             View view = new AuthenticationMenu(new ServiceRepository(db));
             view.display();
         } catch(DataSourceException e) {
