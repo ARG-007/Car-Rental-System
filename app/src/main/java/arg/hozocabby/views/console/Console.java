@@ -1,7 +1,5 @@
 package arg.hozocabby.views.console;
 
-import arg.hozocabby.entities.Account;
-import arg.hozocabby.entities.Rental;
 import arg.hozocabby.views.View;
 
 import java.util.*;
