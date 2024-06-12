@@ -122,8 +122,8 @@ public class CustomerService {
         }
     }
 
-    public void queryRentalHistory(Account acc) throws DataSourceException{
-        queryRentalHistory(acc.getId());
+    public List<Rental> queryRentalHistory(Account acc) throws DataSourceException{
+        return queryRentalHistory(acc.getId());
     }
 
 }

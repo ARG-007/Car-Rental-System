@@ -13,7 +13,7 @@ import java.util.*;
 public class CustomerMenu extends Console{
     private final Account customer;
 
-    private CustomerService customerService;
+    private final CustomerService customerService;
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yy : HH-mm");
 
@@ -32,7 +32,7 @@ public class CustomerMenu extends Console{
         this.customerService = customerService;
 
         places = customerService.queryReachablePlaces();
-        rentalHistory = customerService.queryRentalHistory(cus.getId());
+        rentalHistory = customerService.queryRentalHistory(cus);
 
         customerActionsMenu
             .setOuterSeparator('~')
@@ -73,7 +73,9 @@ public class CustomerMenu extends Console{
             choice = customerActionsMenu.process();
             switch(choice){
                 case 1: rentMenu(); break;
-                case 2: rentalHistory(); break;
+                case 2:
+                    rentalHistory = customerService.queryRentalHistory(customer);
+                    rentalHistory(); break;
                 case 3: cancelRental();break;
 //                case 4: new GOL().display();break;
                 case 4: return;
@@ -165,7 +167,7 @@ public class CustomerMenu extends Console{
                             rentalMenu.changeOption(3, String.format("Change Car Type [%s : %s]", vehicleType, selectedVehicle.getName()));
                             break;
                         } catch (InputMismatchException | NumberFormatException e) {
-                            System.out.println("Enter an valid");
+                            System.out.println("Enter Number Only");
                         } catch (NoSuchElementException e) {
                             System.out.println("Enter Only Shown IDs");
                         }
@@ -215,7 +217,7 @@ public class CustomerMenu extends Console{
                     if(allFieldsEntered) {
                         double distance = pickup.distanceBetween(destination);
                         separator('=');
-                        double driverCost = (wantDriver)?distance*0.5:0;
+                        double driverCost = (wantDriver)?distance*2:0;
                         double fareCost = distance*selectedVehicle.getChargePerKm();
 
                         System.out.printf("Distance      : %.2f KM\n", distance);
@@ -342,6 +344,7 @@ public class CustomerMenu extends Console{
 
     private void rentalHistory(){
 
+
         Table t = new Table("ID", "Vehicle Name", "Driver Assigned", "Pickup Location", "Destination Location", "Pickup Time", "Cost", "Status");
 
         for(Rental r : rentalHistory){
@@ -392,16 +395,25 @@ public class CustomerMenu extends Console{
 
         t.display();
 
+        while(true) {
+            try {
+                int rentId = integerInput("Enter The ID of the Rental you want to cancel: ");
 
-        try {
-            int rentId = integerInput("Enter The ID of the Rental you want to cancel: ");
+                Rental cancellable = pendingRents.parallelStream().filter(r->r.getId().equals(rentId)).findFirst().orElseThrow();
+                boolean cancelled = customerService.cancelRent(cancellable);
+                if(cancelled)
+                    System.out.println("Cancelled Successfully");
+                else
+                    System.out.println("Cancellation Failed");
 
-            Rental cancellable = pendingRents.parallelStream().filter(r->r.getId().equals(rentId)).findFirst().orElseThrow();
-            customerService.cancelRent(cancellable);
-        } catch (NumberFormatException | InputMismatchException ae) {
-            System.out.println("Enter Only The ID Number");
-        } catch(NoSuchElementException nse){
-            System.out.println("Invalid ID, Enter In The ID From Table");
+                input("Press Enter To Continue");
+
+                break;
+            } catch (NumberFormatException | InputMismatchException ae) {
+                System.out.println("Enter Only The ID Number");
+            } catch(NoSuchElementException nse){
+                System.out.println("Invalid ID, Enter In The ID From Table");
+            }
         }
 
     }

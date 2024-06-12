@@ -54,6 +54,7 @@ public class DriverMenu extends Console{
             clearScreen();
             switch (driverMenu.process()){
                 case 1:
+                    separator('#');
                     List<Rental> currentAssignment = drs.getPendingRentals(driver);
 
                     if(currentAssignment.isEmpty()){
@@ -62,24 +63,26 @@ public class DriverMenu extends Console{
                         printRentals(currentAssignment);
                     }
 
-
+                    separator('-');
                     input("Press Enter To Continue.....");
 
                     break;
                 case 2:
+                    separator('@');
                     List<Rental> completedAssignment = drs.getCompletedRentals(driver);
 
                     if(completedAssignment.isEmpty()){
-                        System.out.println("You Have No Pending Assignments");
+                        System.out.println("You Have Not Completed Any Assignments");
                     } else {
                         printRentals(completedAssignment);
                     }
 
-
+                    separator('=');
                     input("Press Enter To Continue.....");
 
                     break;
                 case 3:
+                    separator('$');
                     List<Rental> assignment = drs.getOngoingRentals(driver);
 
                     if(assignment.isEmpty()) {
@@ -102,24 +105,26 @@ public class DriverMenu extends Console{
                             System.out.println("Invalid ID, Enter In The ID From Table");
                         }
                     }
-
+                    separator('%');
                     input("Press Enter To Continue.....");
 
                     break;
                 case 4:
+                    separator('&');
                     List<Rental> assignmentHistory = drs.getAssignedRentals(driver);
                     if(assignmentHistory.isEmpty()) {
                         System.out.println("You Have No Assignments, Rest Well");
                     } else {
                         printRentals(assignmentHistory);
                     }
+                    separator('%');
                     input("Press Enter To Continue.....");
                     break;
                 case 5:
+                    separator('^');
                     List<Rental> assHistory = drs.getCompletedRentals(driver);
                     if(assHistory.isEmpty()) {
                         System.out.println("You Haven't Completed Assignments So Far");
-                        break;
                     } else {
                         System.out.println("You have Completed These Assignments So Far: ");
 
@@ -132,6 +137,8 @@ public class DriverMenu extends Console{
 
                         System.out.printf("Which Has A Total Commission of: %.2f ", commissions);
                     }
+
+                    separator('%');
 
                     input("Press Enter To Continue.....");
 

@@ -118,11 +118,12 @@ public class VehicleDataAccess {
     public Vehicle addVehicle(Vehicle v) throws DataSourceException, DataAccessException{
         try(PreparedStatement ps = dbMan.getPreparedStatement(VEHICLE_CREATE)) {
             ps.setInt(1, v.getSeats());
-            ps.setDouble(2, v.getChargePerKm());
-            ps.setInt(3, v.getOwner().getId());
-            ps.setDouble(4, v.getMileage());
-            ps.setInt(5, v.getFuelType().getOrdinal());
-            ps.setInt(6, v.getVehicleType().getOrdinal());
+            ps.setString(2, v.getName());
+            ps.setDouble(3, v.getChargePerKm());
+            ps.setInt(4, v.getOwner().getId());
+            ps.setDouble(5, v.getMileage());
+            ps.setInt(6, v.getFuelType().getOrdinal());
+            ps.setInt(7, v.getVehicleType().getOrdinal());
 
             ps.executeUpdate();
 

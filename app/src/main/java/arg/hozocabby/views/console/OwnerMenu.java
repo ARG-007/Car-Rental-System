@@ -80,9 +80,12 @@ public class OwnerMenu extends Console{
                     Vehicle.FuelType fuel = Vehicle.FuelType.valueOf(fuelMenu.process());
                     Double mileage = doubleInput("Enter The Mileage Of The Car: ");
 
-                    ors.addVehicle(new Vehicle(name, type, this.owner, seats, cpk, mileage, fuel));
+                    if(ors.addVehicle(new Vehicle(name, type, this.owner, seats, cpk, mileage, fuel)).isPresent()){
+                        System.out.println("Added Successfully");
+                    } else {
+                        System.out.println("Addition Failed");
+                    }
 
-                    System.out.println("Added Successfully");
 
                     input("Press Enter To Continue");
 
