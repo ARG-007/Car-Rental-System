@@ -13,6 +13,7 @@ actor admin
 admin --> (View All Rentals)
 admin --> (View Accounts)
 admin --> (View Vehicles)
+admin --> (View Places)
 
 rectangle Renting {
 left to right direction
@@ -20,9 +21,9 @@ left to right direction
 (Rent) .down-> (Renting) : <<includes>>
 (Set / Change Pickup Time)
 (Set / Change Destination)
-(Set / Change Car Type)
-(View Travel Time)
-(View Fare)
+(Set / Change Car Type) -down-> (Set / Change Car) : <<includes>>
+(Set Driver Assignment)
+(View Fare Cost)
 }
 
 own --> (View Fleet)
@@ -41,7 +42,7 @@ cus --> (Rent)
 cus --> (View Rents)
 cus --> (Cancel Rent)
 cus --> (Payment)
-note bottom of (Payment) : At Drop Point
+note bottom of (Payment) : At Drop Point / At Rent End
 
 
 @enduml
