@@ -43,7 +43,7 @@ public class CustomerMenu extends Console{
                     customer.getName(), customer.getId()
                 )
             )
-            .addOption("Rent", "View Rentals", "Cancel Rental", "Show Menu", "Exit")
+            .addOption("Rent", "View Rentals", "Cancel Rental", "Exit")
             .setPrompt("Enter Your Choice: ");
 
         rentalMenu
@@ -74,8 +74,8 @@ public class CustomerMenu extends Console{
                 case 1: rentMenu(); break;
                 case 2: rentalHistory(); break;
                 case 3: cancelRental();break;
-                case 4: break;
-                case 5: return;
+//                case 4: new GOL().display();break;
+                case 4: return;
             }
         }
     }
@@ -149,8 +149,17 @@ public class CustomerMenu extends Console{
                 case 4:
                     while(true){
                         try {
-                            String date = input("Enter Pickup Time [Format: DD-MM-YY : hh-mm]: ");
-                            pickupDate = Timestamp.valueOf(LocalDateTime.parse(date, dateFormatter));
+                            String date = input("Enter Pickup Time [Format: DD-MM-YY : hh-mm](eg: 04-02-2069 : 20-30): ");
+                            LocalDateTime ldt = LocalDateTime.parse(date, dateFormatter);
+
+                            if(ldt.isBefore(LocalDateTime.now())){
+                                System.out.println("The Entered Datetime Is In The Past, Please Enter Time In Future");
+                                continue;
+                            }
+
+                            pickupDate = Timestamp.valueOf(ldt);
+
+
                             rentalMenu.changeOption(4, String.format("Change Pickup Time [%s]", date));
                             break;
                         } catch (DateTimeException pe){
@@ -276,7 +285,7 @@ public class CustomerMenu extends Console{
             } catch (InputMismatchException | NumberFormatException e) {
                 System.out.println("Enter The Number Left of Place Name");
             } catch (NoSuchElementException e) {
-                System.out.println("Enter An Valid Place Number");
+                System.out.println("Please Enter Only The ID of The Displayed Places");
             }
 
         }
@@ -315,6 +324,8 @@ public class CustomerMenu extends Console{
             System.out.println("You Haven't Rented Any Car");
 
             input("Press Enter To Continue");
+
+            return;
         }
 
 

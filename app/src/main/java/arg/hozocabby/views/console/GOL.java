@@ -14,7 +14,7 @@ public class GOL extends Console{
     private char empty = ' ', fill = '#';
     private int fps = 5;
 
-    private static final List<String> headerLine = Helper.getFileContent("nameArt/BigMoney-ne.txt");
+//    private static final List<String> headerLine = Helper.getFileContent("nameArt/BigMoney-ne.txt");
 
     private boolean gameLoop = true;
 
@@ -124,7 +124,7 @@ public class GOL extends Console{
 
 
     @Override
-    public void display() throws Exception {
+    public void display()  {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         life.randFill(50);
@@ -147,7 +147,7 @@ public class GOL extends Console{
                    switch (br.read()){
                        case ' ': gameLoop=false;break;
                        case 's' | 'S' : gameLoop = true; break;
-                       case '>': life.evolve(); break;
+                       case '.': life.evolve(); break;
                        case 'r': life.randFill(50);break;
                        case 'i': increaseFps(); break;
                        case 'k': decreaseFps(); break;

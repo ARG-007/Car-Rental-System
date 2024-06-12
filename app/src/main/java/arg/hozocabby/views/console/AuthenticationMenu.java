@@ -39,7 +39,7 @@ public class AuthenticationMenu extends Console {
         specialAdminMenu
             .setOuterSeparator('@')
             .setInnerSeparator('-')
-            .addOption("Login", "Register", "Back", "Exit")
+            .addOption("Login",  "Back", "Exit")
             .setPrompt("Select Authentication Mode: ");
 
     }
@@ -75,23 +75,19 @@ public class AuthenticationMenu extends Console {
 
             Optional<Account> loggedInAccount = Optional.empty();
 
-            try {
-                if(selectedRole == Account.UserType.ADMIN) {
-                    switch (authenMode) {
-                        case 1: loggedInAccount = userLogin();break;
-                        case 2: break;
-                        case 3: return;
-                    }
-                } else {
-                    switch (authenMode){
-                        case 1: loggedInAccount = userLogin();break;
-                        case 2: loggedInAccount = userRegister();break;
-                        case 3: break;
-                        case 4: return;
-                    }
+            if(selectedRole == Account.UserType.ADMIN) {
+                switch (authenMode) {
+                    case 1: loggedInAccount = userLogin();break;
+                    case 2: break;
+                    case 3: return;
                 }
-            } finally {
-//                separator('.');
+            } else {
+                switch (authenMode){
+                    case 1: loggedInAccount = userLogin();break;
+                    case 2: loggedInAccount = userRegister();break;
+                    case 3: break;
+                    case 4: return;
+                }
             }
 
             if(loggedInAccount.isPresent()){

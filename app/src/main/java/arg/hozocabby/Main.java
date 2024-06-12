@@ -11,20 +11,18 @@ public class Main {
     public static void main(String[] args){
 
         try (Database db = Database.getDatabase()){
-//            AuthenticationService authMan = new AuthenticationService(db.getAccountDataAccess());
-
             View view = new AuthenticationMenu(new ServiceRepository(db));
             view.display();
         } catch(DataSourceException e) {
             System.out.println("Database Error - " + e.getMessage());
 
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }catch(Exception e) {
             System.out.println("Exception: "+e);
 
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(System.err);
 
         }
 

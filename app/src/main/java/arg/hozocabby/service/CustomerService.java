@@ -19,6 +19,7 @@ public class CustomerService {
     public List<Vehicle> queryAvailableVehicleOfType(Vehicle.VehicleType type) throws DataSourceException {
         try {
             return db.getVehicleDataAccess().getVehicleOfTypeWithStatus(type, Vehicle.VehicleStatus.AVAILABLE);
+
         } catch (DataAccessException dae) {
             System.err.print(dae.getMessage());
             dae.printStackTrace(System.err);
@@ -54,7 +55,8 @@ public class CustomerService {
                             break;
                         }
                     }
-                    if(available) availableDrivers.add(d);
+                    if(available)
+                        availableDrivers.add(d);
                 }
 
 
