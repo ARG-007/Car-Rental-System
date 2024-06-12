@@ -59,6 +59,7 @@ public class CustomerMenu extends Console{
             .setInnerSeparator('-')
             .setTitle("Select Car Type")
             .addOption(Vehicle.VehicleType.values())
+            .addOption("Back")
             .setPrompt("Enter Your Choice: ");
 
     }
@@ -103,19 +104,45 @@ public class CustomerMenu extends Console{
 
             switch(choice) {
                 case 1:
-                    pickup = getPlaceInputExcluding("Enter Your Pickup Place: ", pickup, destination);
+                    pickup = getPlaceInputExcluding("Enter Your Pickup Place: ", destination);
                     rentalMenu.changeOption(1, String.format("Change Pickup [%s]", pickup.name()));
                     break;
                 case 2:
-                    destination = getPlaceInputExcluding("Enter Your Destination Place: ", pickup, destination);
+                    destination = getPlaceInputExcluding("Enter Your Destination Place: ", pickup);
                     rentalMenu.changeOption(2, String.format("Change Destination [%s]", destination.name()));
                     break;
                 case 3:
-                    int carType = carTypeSelection.process();
-                    vehicleType = Vehicle.VehicleType.valueOf(carType);
-                    List<Vehicle> vehicles = customerService.queryAvailableVehicleOfType(vehicleType);
+
+                    List<Vehicle> vehicles = null;
+
+                    boolean back = false;
+
+                    while(true) {
+                        int carType = carTypeSelection.process();
+
+                        if(carType == 5) {
+                            back = true;
+                            break;
+                        }
+
+                        vehicleType = Vehicle.VehicleType.valueOf(carType);
+                        vehicles = customerService.queryAvailableVehicleOfType(vehicleType);
+
+                        if(vehicles.isEmpty()){
+                            System.out.printf("There Are No %s Type Vehicles Available\nPlease Try Again After Sometime Or Choose Another Type\n", vehicleType);
+                            continue;
+                        }
+                        break;
+
+                    }
+
+                    if(back) break;
+
+
 
                     separator('=');
+
+
 
                     System.out.println("Vehicles Available Of This Type Are: ");
 
@@ -149,7 +176,7 @@ public class CustomerMenu extends Console{
                 case 4:
                     while(true){
                         try {
-                            String date = input("Enter Pickup Time [Format: DD-MM-YY : hh-mm](eg: 04-02-2069 : 20-30): ");
+                            String date = input("Enter Pickup Time [Format: DD-MM-YY : hh-mm](eg: 04-02-69 : 20-30): ");
                             LocalDateTime ldt = LocalDateTime.parse(date, dateFormatter);
 
                             if(ldt.isBefore(LocalDateTime.now())){
@@ -249,10 +276,10 @@ public class CustomerMenu extends Console{
 
     }
 
-    private Place getPlaceInputExcluding(String prompt, Place... Exclude) {
+    private Place getPlaceInputExcluding(String prompt, Place... exclude) {
         List<Place> validPlaces = places.stream()
                 .filter(p -> {
-                    for(Place i : Exclude) {
+                    for(Place i : exclude) {
                         if(i!=null && p.id().equals(i.id()))
                             return false;
                     }
@@ -260,32 +287,51 @@ public class CustomerMenu extends Console{
                 })
                 .toList();
 
+
         int size = validPlaces.size();
         int pivot = size/2;
-        int columnWidth = 25;
+//        int columnWidth = 25;
+//
+//
+//        for (int i = 0; i < size - pivot; i++) {
+//            String col1 = String.format("%2d: %s", validPlaces.get(i).id(), validPlaces.get(i).name());
+//
+//            int spaces = columnWidth - col1.length();
+//
+//            System.out.printf(col1);
+//            for(int f = 0;f<spaces;f++) System.out.print(" ");
+//            if(i+pivot+1 < size) {
+//                System.out.printf("%2d: %s", validPlaces.get(i + pivot + 1).id(), validPlaces.get(i + pivot + 1).name());
+//            }
+//            System.out.println();
+//        }
 
-        for (int i = 0; i < size - pivot; i++) {
-            String col1 = String.format("%2d: %s", validPlaces.get(i).id(), validPlaces.get(i).name());
-
-            int spaces = columnWidth - col1.length();
-
-            System.out.printf(col1);
-            for(int f = 0;f<spaces;f++) System.out.print(" ");
-            if(i+pivot+1 < size)
-                System.out.printf("%2d: %s", validPlaces.get(i+pivot+1).id(), validPlaces.get(i+pivot+1).name());
-            System.out.println();
+        Table t = new Table("ID", "Name"," ", "ID", "Name");
+        for(int i = 0;i <size - pivot; i++) {
+            int piv = i+pivot+1;
+            boolean within = piv<size;
+            t.addRow(validPlaces.get(i).id(), validPlaces.get(i).name(),"", within?validPlaces.get(piv).id():"", within?validPlaces.get(piv).name():"");
         }
+
+        t.display();
 
         separator('+');
 
         while(true) {
             try {
                 int placeId = integerInput(prompt);
+
+                for(Place p : exclude) {
+                    if(p!=null && p.id() == placeId) throw new IllegalArgumentException();
+                }
+
                 return validPlaces.parallelStream().filter(place -> place.id().equals(placeId)).findFirst().orElseThrow();
             } catch (InputMismatchException | NumberFormatException e) {
                 System.out.println("Enter The Number Left of Place Name");
             } catch (NoSuchElementException e) {
                 System.out.println("Please Enter Only The ID of The Displayed Places");
+            } catch (IllegalArgumentException iae) {
+                System.out.println("Destination and Pickup cannot be same");
             }
 
         }

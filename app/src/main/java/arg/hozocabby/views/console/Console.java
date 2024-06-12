@@ -153,8 +153,6 @@ abstract class Console implements View{
         private String[] headers;
 
         private int tableWidth = 0;
-
-        private char cornerSeparator = '+';
         private char topSeparator = '┬', middleSeparator = '┼', bottomSeparator='┴';
         private char tlCorner = '┌', trCorner = '┐', brCorner ='┘', blConer = '└';
         private char leftCorner = '├', rightCorner = '┤';
@@ -257,9 +255,9 @@ abstract class Console implements View{
             for(int r =0 ; r< rows.size();r++) {
                 String[] s = rows.get(r);
                 System.out.print(verticalSeparator);
-                for(int i = 0;i <s.length;i++) {
+                for(int i = 0;i <headers.length;i++) {
 
-                    System.out.printf(" %-"+colSize[i]+"s "+verticalSeparator, s[i]);
+                    System.out.printf(" %-"+colSize[i]+"s "+verticalSeparator, i<s.length ? s[i] : "");
                 }
                 System.out.println();
 
