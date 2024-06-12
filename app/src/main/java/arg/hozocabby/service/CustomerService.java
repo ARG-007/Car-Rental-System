@@ -60,10 +60,10 @@ public class CustomerService {
                 }
 
 
-                if(drivers.isEmpty())
+                if(availableDrivers.isEmpty())
                     throw new NoSuchElementException("NO_DRIVER_AVAILABLE");
 
-                rent.setDriver(drivers.get(0));
+                rent.setDriver(availableDrivers.get(0));
             }
 
 
