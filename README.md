@@ -20,6 +20,19 @@ are considered as add-on, opt-in for each rental booking.
 **JDBC Driver:** `XSerial SQLite 3.46.0.0`
 
 ---
+### Installation
+
+The Recommended way to run this application is to download the [Latest jar](https://github.com/ARG-007/Car-Rental-System/releases/tag/latest)
+and run it using this command:
+
+```bash
+java -jar HozoCabby.jar
+```
+
+The Jar Contains all the dependencies, so you won't have to download anything.
+
+---
+
 ### **Architecture**
 
 ![Diagram Showcasing Architecture](/uml/Architecture/HozoCabby-architecture.svg "Architecture Diagram")
