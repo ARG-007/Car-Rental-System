@@ -7,7 +7,7 @@
 
 Hozo Cabby is currently a command line application that mimics a typical car rental system. 
 It covers basics use cases for customer, owner, driver and admin. The Pseudo - Business Model
-focuses on renting out cars to customers from the pool cars made available by owners, while the driver 
+focuses on renting out cars to customers from the pool of cars made available by owners, while the drivers
 are considered as add-on, opt-in for each rental booking.
 
 ---
@@ -20,6 +20,19 @@ are considered as add-on, opt-in for each rental booking.
 **JDBC Driver:** `XSerial SQLite 3.46.0.0`
 
 ---
+### Installation
+
+The Recommended way to run this application is to download the [Latest jar](https://github.com/ARG-007/Car-Rental-System/releases/latest)
+and run it using this command:
+
+```bash
+java -jar HozoCabby.jar
+```
+
+The Jar Contains all the dependencies, so you won't have to download anything.
+
+---
+
 ### **Architecture**
 
 ![Diagram Showcasing Architecture](/uml/Architecture/HozoCabby-architecture.svg "Architecture Diagram")
