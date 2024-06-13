@@ -1,10 +1,7 @@
 package arg.hozocabby.views.console;
 
-import arg.hozocabby.Helper;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.List;
 
 import static java.lang.Thread.sleep;
 

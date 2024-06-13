@@ -1,5 +1,6 @@
 package arg.hozocabby.views.console;
 
+import arg.hozocabby.util.Validation;
 import arg.hozocabby.views.View;
 
 import java.util.*;
@@ -18,7 +19,6 @@ abstract class Console implements View{
      * regard as the dimensions of the console window.
      */
     protected static final int CONSOLE_WIDTH = 214 , CONSOLE_HEIGHT=67;
-
 
     /**
      * {@code Scanner} Object that is used in input parsing methods present in this class
@@ -315,6 +315,29 @@ abstract class Console implements View{
 
     protected Long longInput(String prompt){
         return Long.parseLong(input(prompt));
+    }
+
+    protected String getValidatedInput(String prompt, Validation... rules){
+        boolean cont = false;
+        while(true){
+            cont = false;
+            String in = input(prompt);
+
+            for(Validation rule : rules) {
+                if(rule.validate(in)){
+                    cont = true;
+
+                    System.out.println(rule.getMessage());
+                    break;
+                }
+            }
+
+            if(cont) continue;
+
+            return in;
+        }
+
+
     }
 
 

@@ -11,7 +11,7 @@ import java.util.*;
 import arg.hozocabby.exceptions.DataSourceException;
 import org.sqlite.SQLiteConfig;
 
-import arg.hozocabby.Helper;
+import arg.hozocabby.util.Helper;
 
 public class DatabaseManager implements AutoCloseable{
     private static final Properties props;

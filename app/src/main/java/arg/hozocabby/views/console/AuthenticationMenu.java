@@ -5,6 +5,7 @@ import arg.hozocabby.exceptions.DataAccessException;
 import arg.hozocabby.exceptions.DataSourceException;
 import arg.hozocabby.service.AuthenticationService;
 import arg.hozocabby.service.ServiceRepository;
+import arg.hozocabby.util.Validation;
 
 import java.util.NoSuchElementException;
 import java.util.InputMismatchException;
@@ -118,8 +119,8 @@ public class AuthenticationMenu extends Console {
 
         attemptLoop:
         while(reAttempts > 0){
-            String mobile = input("Enter Your Mobile: ");
-            String password = input("Enter Your Password: ");
+            String mobile = getValidatedInput("Enter Your Mobile: ", Validation.INVALID_MOBILE);
+            String password = getValidatedInput("Enter Your Password: ", Validation.FIELD_NOT_EMPTY);
             separator('.');
 
             try {
@@ -164,10 +165,10 @@ public class AuthenticationMenu extends Console {
         separator('+');
         while(true) {
 
-            String name = input("Enter Name: ");
-            String phone = input("Enter Mobile Number: ");
-            String address = input("Enter Your Address: ");
-            String password = input("Enter An Password: ");
+            String name = getValidatedInput("Enter Name: ", Validation.FIELD_NOT_EMPTY, Validation.NO_NUMERIC);
+            String phone = getValidatedInput("Enter Mobile Number: ", Validation.INVALID_MOBILE);
+            String address = getValidatedInput("Enter Your Address: ", Validation.FIELD_NOT_EMPTY);
+            String password = getValidatedInput("Enter An Password: ", Validation.FIELD_NOT_EMPTY);
 
             try {
                 acc = authService.register(name, phone, address, selectedRole, password);

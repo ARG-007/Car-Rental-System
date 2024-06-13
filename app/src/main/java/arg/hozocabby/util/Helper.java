@@ -1,4 +1,4 @@
-package arg.hozocabby;
+package arg.hozocabby.util;
 
 import java.io.IOException;
 import java.io.InputStream;

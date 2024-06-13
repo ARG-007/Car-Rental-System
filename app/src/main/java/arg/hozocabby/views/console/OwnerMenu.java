@@ -4,6 +4,7 @@ import arg.hozocabby.entities.Account;
 import arg.hozocabby.entities.Vehicle;
 import arg.hozocabby.exceptions.DataSourceException;
 import arg.hozocabby.service.OwnerService;
+import arg.hozocabby.util.Validation;
 
 import java.util.InputMismatchException;
 import java.util.List;
@@ -73,12 +74,12 @@ public class OwnerMenu extends Console{
                     input("Press Enter To Continue");
                     break;
                 case 2:
-                    String name = input("Enter Model Of Your Vehicle [Car Manufacturer-Car Model]: ");
-                    Double cpk = doubleInput("Enter Charge Per KM: ");
+                    String name = getValidatedInput("Enter Model Of Your Vehicle [Car Manufacturer-Car Model]: ", Validation.FIELD_NOT_EMPTY);
+                    Double cpk = Double.parseDouble(getValidatedInput("Enter Charge Per KM: ", Validation.INVALID_DOUBLE));
                     Vehicle.VehicleType type = Vehicle.VehicleType.valueOf(typeMenu.process());
-                    Integer seats = integerInput("Enter Number Seats In Your Car: ");
+                    Integer seats = Integer.parseInt(getValidatedInput("Enter Number Seats In Your Car: ", Validation.ONLY_NUMERIC));
                     Vehicle.FuelType fuel = Vehicle.FuelType.valueOf(fuelMenu.process());
-                    Double mileage = doubleInput("Enter The Mileage Of The Car: ");
+                    Double mileage = Double.parseDouble(getValidatedInput("Enter The Mileage Of The Car: ", Validation.INVALID_DOUBLE));
 
                     if(ors.addVehicle(new Vehicle(name, type, this.owner, seats, cpk, mileage, fuel)).isPresent()){
                         System.out.println("Added Successfully");
