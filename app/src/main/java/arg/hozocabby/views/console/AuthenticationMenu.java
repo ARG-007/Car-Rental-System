@@ -28,6 +28,7 @@ public class AuthenticationMenu extends Console {
             .setInnerSeparator('-')
             .setTitle("User Selection")
             .addOption(Account.UserType.values())
+            .addOption("Pass Time")
             .addOption("Exit")
             .setPrompt("Enter Your Choice: ");
 
@@ -47,15 +48,18 @@ public class AuthenticationMenu extends Console {
 
 
     public void display() throws DataSourceException{
-        boolean exit;
-
         while(true){
             clearScreen();
 
             int menuOutput = roleSelectionMenu.process();
             clearScreen();
 
-            if(menuOutput == 5)
+            if(menuOutput == 5){
+                new GOL().display();
+                continue;
+            }
+
+            if(menuOutput == 6)
                 return;
 
             selectedRole = Account.UserType.valueOf(menuOutput);

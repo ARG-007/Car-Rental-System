@@ -77,7 +77,6 @@ public class CustomerMenu extends Console{
                     rentalHistory = customerService.queryRentalHistory(customer);
                     rentalHistory(); break;
                 case 3: cancelRental();break;
-//                case 4: new GOL().display();break;
                 case 4: return;
             }
         }
@@ -200,6 +199,7 @@ public class CustomerMenu extends Console{
                 case 5:
                     while(true) {
                         String dc= input("Do You Want An Driver To Be Assigned For The Vehicle (Yes/No): ").toLowerCase();
+
                         if(dc.equals("y") || dc.equals("yes")){
                             wantDriver = true;
                         } else if(dc.equals("n") || dc.equals("no")) {

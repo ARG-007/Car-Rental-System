@@ -125,13 +125,12 @@ public class GOL extends Console{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         life.randFill(50);
-        long sleepTime = 1000/fps;
 
 
         while(true) {
             clearScreen();
             separator('=');
-            System.out.println(center(String.format(STAT_STRING, fps, life.population, life.generation), CONSOLE_WIDTH));
+            System.out.println(center(STAT_STRING.formatted(fps, life.population, life.generation), CONSOLE_WIDTH));
             separator('-');
             System.out.println(center(instructions, CONSOLE_WIDTH));
             separator('~');
