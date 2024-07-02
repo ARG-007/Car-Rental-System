@@ -281,15 +281,12 @@ abstract class Console implements View{
     }
 
     protected static String center(String text, int width) {
-        int center = width/2;
-        int textCenter = text.length()/2;
+        if(width <=text.length())
+            return text;
 
-        int pad = center-textCenter;
+        int diff = (width - text.length())/2;
 
-        StringBuilder padding = new StringBuilder();
-        for(int i=0;i<pad;i++) padding.append(" ");
-
-        return padding.append(text).toString();
+        return String.format("%-"+width+"s"," ".repeat(diff) + text);
     }
 
     protected String input(String prompt){

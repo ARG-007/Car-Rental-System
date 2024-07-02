@@ -15,9 +15,9 @@ public class GOL extends Console{
 
     private boolean gameLoop = true;
 
-    private static final String STAT_STRING = "FPS: %d \t POPULATION: %d \t GENERATION: %d";
+    private static final String STAT_STRING = "FPS: %d           POPULATION: %d            GENERATION: %d";
 
-    private static final String instructions = center("Press(+Enter) [e] To Exit; [space] To Pause; [.] to Step One Generation; [s] to Resume; [r] to reset; [i] to increase fps; [k] to decrease fps", CONSOLE_WIDTH-2);
+    private static final String instructions = center("Press(+Enter) [e] To Exit; [space] To Pause; [.] to Step One Generation; [s] to Resume; [r] to reset; [i] to increase fps; [k] to decrease fps", CONSOLE_WIDTH);
 
     Life life = new Life(LIFE_HEIGHT, LIFE_WIDTH);
 
@@ -67,6 +67,27 @@ public class GOL extends Console{
                     + curGen[x+1][y-1] + curGen[x+1][y] + curGen[x+1][y+1];
         }
 
+        public void reSize(int newHeight, int newWidth){
+
+            byte[][] newGen = new byte[newHeight+2][newWidth+2];
+
+            int heightRange = Math.min(this.height, newHeight)+1;
+            int widthRange = Math.min(this.width, newWidth)+1;
+
+            for(int i=0;i<heightRange;i++) {
+                for(int j=0;j<widthRange;j++) {
+                    newGen[i][j] = this.curGen[i][j];
+                }
+            }
+
+            this.curGen = newGen;
+
+            this.oldGen = new byte[newHeight+2][newWidth+2];
+
+            this.height = newHeight;
+            this.width = newWidth;
+        }
+
         public void evolve() {
             int count;
             int newPopulation = 0;
@@ -86,11 +107,6 @@ public class GOL extends Console{
             curGen = oldGen;
             oldGen = temp;
         }
-
-    }
-
-    static {
-        StringBuilder sb = new StringBuilder();
 
     }
 
@@ -130,9 +146,9 @@ public class GOL extends Console{
         while(true) {
             clearScreen();
             separator('=');
-            System.out.println(center(STAT_STRING.formatted(fps, life.population, life.generation), CONSOLE_WIDTH));
+            System.out.println(center(STAT_STRING.formatted( fps, life.population, life.generation), CONSOLE_WIDTH));
             separator('-');
-            System.out.println(center(instructions, CONSOLE_WIDTH));
+            System.out.println(instructions);
             separator('~');
 
             if(gameLoop){
