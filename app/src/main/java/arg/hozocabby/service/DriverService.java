@@ -26,30 +26,13 @@ public class DriverService {
         return new ArrayList<>();
     }
 
-    public List<Rental> getPendingRentals(Account driver) throws DataSourceException {
+    public List<Rental> getRentalsByStatusFor(Account driver, Rental.RentalStatus status) throws DataSourceException {
         try {
-            return dbMan.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), Rental.RentalStatus.PENDING);
-        }catch (DataAccessException dae){
+            return dbMan.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), status);
+        } catch (DataAccessException dae) {
             dae.printStackTrace(System.err);
         }
-        return new ArrayList<>();
-    }
 
-    public List<Rental> getOngoingRentals(Account driver) throws DataSourceException {
-        try {
-            return dbMan.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), Rental.RentalStatus.ONGOING);
-        }catch (DataAccessException dae){
-            dae.printStackTrace(System.err);
-        }
-        return new ArrayList<>();
-    }
-
-    public List<Rental> getCompletedRentals(Account driver) throws DataSourceException{
-        try {
-            return dbMan.getRentalDataAccess().getRentalsWithDriverWithStatus(driver.getId(), Rental.RentalStatus.COMPLETED);
-        }catch (DataAccessException dae){
-            dae.printStackTrace(System.err);
-        }
         return new ArrayList<>();
     }
 

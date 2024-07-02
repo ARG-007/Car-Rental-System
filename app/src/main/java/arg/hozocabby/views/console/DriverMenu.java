@@ -55,7 +55,7 @@ public class DriverMenu extends Console{
             switch (driverMenu.process()){
                 case 1:
                     separator('#');
-                    List<Rental> currentAssignment = drs.getPendingRentals(driver);
+                    List<Rental> currentAssignment = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.PENDING);
 
                     if(currentAssignment.isEmpty()){
                         System.out.println("You Have No Pending Assignments");
@@ -69,7 +69,7 @@ public class DriverMenu extends Console{
                     break;
                 case 2:
                     separator('@');
-                    List<Rental> completedAssignment = drs.getCompletedRentals(driver);
+                    List<Rental> completedAssignment = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.COMPLETED);
 
                     if(completedAssignment.isEmpty()){
                         System.out.println("You Have Not Completed Any Assignments");
@@ -83,7 +83,7 @@ public class DriverMenu extends Console{
                     break;
                 case 3:
                     separator('$');
-                    List<Rental> assignment = drs.getOngoingRentals(driver);
+                    List<Rental> assignment = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.ONGOING);
 
                     if(assignment.isEmpty()) {
                         System.out.println("You Have No On-Going Assignments");
@@ -122,7 +122,7 @@ public class DriverMenu extends Console{
                     break;
                 case 5:
                     separator('^');
-                    List<Rental> assHistory = drs.getCompletedRentals(driver);
+                    List<Rental> assHistory = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.COMPLETED);
                     if(assHistory.isEmpty()) {
                         System.out.println("You Haven't Completed Assignments So Far");
                     } else {
