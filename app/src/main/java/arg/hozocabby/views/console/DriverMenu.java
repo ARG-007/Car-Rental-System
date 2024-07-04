@@ -2,6 +2,7 @@ package arg.hozocabby.views.console;
 
 import arg.hozocabby.entities.Account;
 import arg.hozocabby.entities.Rental;
+import arg.hozocabby.exceptions.DataAccessException;
 import arg.hozocabby.exceptions.DataSourceException;
 import arg.hozocabby.service.DriverService;
 
@@ -55,13 +56,20 @@ public class DriverMenu extends Console{
             switch (driverMenu.process()){
                 case 1:
                     separator('#');
-                    List<Rental> currentAssignment = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.PENDING);
+                    try {
+                        List<Rental> currentAssignment = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.PENDING);
+                        if(currentAssignment.isEmpty()){
+                            System.out.println("You Have No Pending Assignments");
+                        } else {
+                            printRentals(currentAssignment);
+                        }
 
-                    if(currentAssignment.isEmpty()){
-                        System.out.println("You Have No Pending Assignments");
-                    } else {
-                        printRentals(currentAssignment);
+                    } catch (DataAccessException dae) {
+                        dae.printStackTrace(System.err);
+
+                        System.out.println("Error: Please try Again later");
                     }
+
 
                     separator('-');
                     input("Press Enter To Continue.....");
@@ -69,12 +77,18 @@ public class DriverMenu extends Console{
                     break;
                 case 2:
                     separator('@');
-                    List<Rental> completedAssignment = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.COMPLETED);
+                    try {
+                        List<Rental> completedAssignment = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.COMPLETED);
 
-                    if(completedAssignment.isEmpty()){
-                        System.out.println("You Have Not Completed Any Assignments");
-                    } else {
-                        printRentals(completedAssignment);
+                        if(completedAssignment.isEmpty()){
+                            System.out.println("You Have Not Completed Any Assignments");
+                        } else {
+                            printRentals(completedAssignment);
+                        }
+                    } catch (DataAccessException dae) {
+                        dae.printStackTrace(System.err);
+
+                        System.out.println("Error: Please try Again later");
                     }
 
                     separator('=');
@@ -83,27 +97,33 @@ public class DriverMenu extends Console{
                     break;
                 case 3:
                     separator('$');
-                    List<Rental> assignment = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.ONGOING);
+                    try {
+                        List<Rental> assignment = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.ONGOING);
 
-                    if(assignment.isEmpty()) {
-                        System.out.println("You Have No On-Going Assignments");
-                    } else {
-                        printRentals(assignment);
+                        if(assignment.isEmpty()) {
+                            System.out.println("You Have No On-Going Assignments");
+                        } else {
+                            printRentals(assignment);
 
-                        try {
-                            int rentId = integerInput("Enter The ID of the Rental you want to End: ");
+                            try {
+                                int rentId = integerInput("Enter The ID of the Rental you want to End: ");
 
-                            Rental endable = assignment.parallelStream().filter(r->r.getId().equals(rentId)).findFirst().orElseThrow();
-                            if(drs.endRental(driver, endable)){
-                                System.out.println("Rental Completed Successfully");
-                            } else{
-                                System.out.println("Due To Internal Error It can not be completed, Try Again");
+                                Rental endable = assignment.parallelStream().filter(r->r.getId().equals(rentId)).findFirst().orElseThrow();
+                                if(drs.endRental(driver, endable)){
+                                    System.out.println("Rental Completed Successfully");
+                                } else{
+                                    System.out.println("Due To Internal Error It can not be completed, Try Again");
+                                }
+                            } catch (NumberFormatException | InputMismatchException ae) {
+                                System.out.println("Enter Only The ID Number");
+                            } catch(NoSuchElementException nse){
+                                System.out.println("Invalid ID, Enter In The ID From Table");
                             }
-                        } catch (NumberFormatException | InputMismatchException ae) {
-                            System.out.println("Enter Only The ID Number");
-                        } catch(NoSuchElementException nse){
-                            System.out.println("Invalid ID, Enter In The ID From Table");
                         }
+                    } catch (DataAccessException dae) {
+                        dae.printStackTrace(System.err);
+
+                        System.out.println("Error: Please try Again later");
                     }
                     separator('%');
                     input("Press Enter To Continue.....");
@@ -111,31 +131,43 @@ public class DriverMenu extends Console{
                     break;
                 case 4:
                     separator('&');
-                    List<Rental> assignmentHistory = drs.getAssignedRentals(driver);
-                    if(assignmentHistory.isEmpty()) {
-                        System.out.println("You Have No Assignments, Rest Well");
-                    } else {
-                        printRentals(assignmentHistory);
+                    try {
+                        List<Rental> assignmentHistory = drs.getAssignedRentals(driver);
+                        if(assignmentHistory.isEmpty()) {
+                            System.out.println("You Have No Assignments, Rest Well");
+                        } else {
+                            printRentals(assignmentHistory);
+                        }
+                    } catch (DataAccessException dae) {
+                        dae.printStackTrace(System.err);
+
+                        System.out.println("Error: Please try Again later");
                     }
                     separator('%');
                     input("Press Enter To Continue.....");
                     break;
                 case 5:
                     separator('^');
-                    List<Rental> assHistory = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.COMPLETED);
-                    if(assHistory.isEmpty()) {
-                        System.out.println("You Haven't Completed Assignments So Far");
-                    } else {
-                        System.out.println("You have Completed These Assignments So Far: ");
+                    try {
+                        List<Rental> assHistory = drs.getRentalsByStatusFor(driver, Rental.RentalStatus.COMPLETED);
+                        if(assHistory.isEmpty()) {
+                            System.out.println("You Haven't Completed Assignments So Far");
+                        } else {
+                            System.out.println("You have Completed These Assignments So Far: ");
 
-                        printRentals(assHistory);
+                            printRentals(assHistory);
 
-                        double commissions = 0;
-                        for(Rental r : assHistory){
-                            commissions += r.getCost() * .5;
+                            double commissions = 0;
+                            for(Rental r : assHistory){
+                                commissions += r.getCost() * .5;
+                            }
+
+                            System.out.printf("Which Has A Total Commission of: %.2f ", commissions);
                         }
+                    } catch (DataAccessException dae) {
+                        dae.printStackTrace(System.err);
 
-                        System.out.printf("Which Has A Total Commission of: %.2f ", commissions);
+                        System.out.println("Error: Please try Again later");
                     }
 
                     separator('%');
